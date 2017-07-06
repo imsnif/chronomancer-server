@@ -43,6 +43,19 @@ function decrementPlayerActions (userId, connection) {
   })
 }
 
+function getPlayerActions (userId, conn) {
+  const id = Number(userId)
+  return new Promise((resolve, reject) => {
+    r.db('chronomancer').table('players').filter({id})('actions').run(conn, (err, cursor) => {
+      if (err) return reject(err)
+      cursor.toArray((err, results) => {
+        if (err) return reject(err)
+        resolve(results[0])
+      })
+    })
+  })
+}
+
 module.exports = function (connection) {
   connection.use('chronomancer')
   app.post('/timeline/quest/:timelineName', async (req, res) => {
@@ -50,9 +63,14 @@ module.exports = function (connection) {
       const timelineName = req.params.timelineName
       const userId = req.headers.userid
       const itemType = await getTimelineItemType(timelineName, connection)
-      await appendItemToPlayer(userId, {name: itemType, source: timelineName}, connection)
-      await decrementPlayerActions(userId, connection)
-      res.sendStatus(200)
+      const actionsLeft = await getPlayerActions(userId, connection)
+      if (actionsLeft > 1) { // TODO: move to validation layer
+        await appendItemToPlayer(userId, {name: itemType, source: timelineName}, connection)
+        await decrementPlayerActions(userId, connection)
+        res.sendStatus(200)
+      } else {
+        res.status(403).json({error: 'No actions left!'})
+      }
     } catch (e) {
       console.error(e.message)
       console.log(e.stack)

@@ -54,6 +54,15 @@ module.exports = {
         {name: 'unlock', source: 'Timeline 2'}
       ],
       actions: 10
+    },
+    {
+      id: 5,
+      gameId: 1,
+      name: 'No-Actions Bob',
+      items: [
+        {name: 'assist', source: 'Timeline 2'}
+      ],
+      actions: 0
     }
   ],
   powers: [
