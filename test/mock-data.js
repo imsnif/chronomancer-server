@@ -10,7 +10,7 @@ module.exports = {
       id: 1,
       gameId: 1,
       name: 'Aram',
-      items: [],
+      items: []
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ module.exports = {
         {name: 'steal', source: 'Timeline 1'},
         {name: 'lock', source: 'Timeline 1'},
         {name: 'unlock', source: false}
-      ],
+      ]
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ module.exports = {
         {name: 'steal', source: 'Timeline 1'},
         {name: 'lock', source: 'Timeline 3'},
         {name: 'unlock', source: 'Timeline 1'}
-      ],
+      ]
     },
     {
       id: 4,
@@ -49,7 +49,7 @@ module.exports = {
         {name: 'steal', source: 'Timeline 1'},
         {name: 'lock', source: 'Timeline 2'},
         {name: 'unlock', source: 'Timeline 2'}
-      ],
+      ]
     }
   ],
   powers: [

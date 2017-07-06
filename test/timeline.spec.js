@@ -1,9 +1,7 @@
 'use strict'
 
 const test = require('tape')
-const proxyquire = require('proxyquire')
 const request = require('supertest')
-const sinon = require('sinon')
 const r = require('rethinkdb')
 const mockData = require('./mock-data')
 
@@ -20,17 +18,19 @@ async function fixtures () {
   const tables = [ 'players', 'powers', 'timelines' ]
   const connection = await new Promise((resolve, reject) => {
     r.connect((err, connection) => {
-      if (err) return reject('error connecting to rethinkdb: ', err)
+      if (err) return reject(err)
       resolve(connection)
     })
   })
   await new Promise((resolve, reject) => {
     r.dbDrop('chronomancer').run(connection, (err, result) => {
+      if (err) return reject(err)
       r.dbCreate('chronomancer').run(connection, (err, result) => {
+        if (err) return reject(err)
         resolve(Promise.all(
           tables.map(tableName => {
             return new Promise((resolve, reject) => {
-              r.db('chronomancer').tableCreate(tableName).run(connection, function(err, result) {
+              r.db('chronomancer').tableCreate(tableName).run(connection, (err, result) => {
                 if (err) return reject(err)
                 return resolve()
               })
