@@ -1,0 +1,19 @@
+{
+  "name": "chronomancer-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && tape test/*.spec.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "proxyquire": "^1.8.0",
+    "sinon": "^2.3.6",
+    "standard": "^10.0.2",
+    "supertest": "^3.0.0",
+    "tape": "^4.7.0"
+  }
+}
