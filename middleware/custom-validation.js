@@ -1,5 +1,6 @@
 'use strict'
 const player = require('../service/player')
+const timeline = require('../service/timeline')
 
 module.exports = {
   hasEnoughActions (connection) {
@@ -23,6 +24,19 @@ module.exports = {
       if (!player) {
         res.statusCode = 403
         next('No such user')
+      } else {
+        next()
+      }
+    }
+  },
+  timelineExists (connection) {
+    const { getTimeline } = timeline(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const timelineName = req.params.timelineName
+      const timeline = await getTimeline(timelineName)
+      if (!timeline) {
+        res.statusCode = 403
+        next('No such timeline')
       } else {
         next()
       }
