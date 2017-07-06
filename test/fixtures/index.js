@@ -24,7 +24,9 @@ function getConnection () {
 function dropDatabase (name, connection) {
   return new Promise((resolve, reject) => {
     r.dbDrop('chronomancer').run(connection, (err, result) => {
-      if (err) return reject(err)
+      if (err && err.msg !== 'Database `chronomancer` does not exist.') {
+        return reject(err)
+      }
       resolve(result)
     })
   })

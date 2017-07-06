@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "docker-compose -f ./test/fixtures/docker-compose.yml up -d",
     "test": "standard && tape test/*.spec.js | faucet"
   },
   "author": "",
