@@ -7,29 +7,38 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+function getTimelineItemType (timelineName, connection) {
+  return new Promise((resolve, reject) => {
+    r.table('timelines').filter({name: timelineName})('type').run(connection, (err, cursor) => {
+      if (err) return reject(err)
+      cursor.toArray((err, results) => {
+        if (err) return reject(err)
+        resolve(results[0])
+      })
+    })
+  })
+}
+
+function appendItemToPlayer (userId, item, connection) {
+  const id = Number(userId)
+  return new Promise((resolve, reject) => {
+    r.table('players').filter({id}).update({
+      items: r.row('items').append(item)
+    }).run(connection, (err, result) => {
+      if (err) return reject(err)
+      resolve(result)
+    })
+  })
+}
+
 module.exports = function (connection) {
   connection.use('chronomancer')
   app.post('/timeline/quest/:timelineName', async (req, res) => {
     try {
       const timelineName = req.params.timelineName
       const userId = req.headers.userid
-      const itemType = await new Promise((resolve, reject) => {
-        r.table('timelines').filter({name: timelineName})('type').run(connection, (err, cursor) => {
-          if (err) return reject(err)
-          cursor.toArray((err, results) => {
-            if (err) return reject(err)
-            resolve(results[0])
-          })
-        })
-      })
-      await new Promise((resolve, reject) => {
-        r.table('players').filter({id: Number(userId)}).update({
-          items: r.row('items').append({name: itemType, source: timelineName})
-        }).run(connection, (err, result) => {
-          if (err) return reject(err)
-          resolve(result)
-        })
-      })
+      const itemType = await getTimelineItemType(timelineName, connection)
+      await appendItemToPlayer(userId, {name: itemType, source: timelineName}, connection)
       res.sendStatus(200)
     } catch (e) {
       console.error(e.message)
