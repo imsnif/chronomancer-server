@@ -86,6 +86,22 @@ test('POST /timeline/quest/:timelineName => appends to existing item list', asyn
   }
 })
 
+test.skip('POST /timeline/quest/:timelineName => bad parameters - no userId', async t => {
+  // TBD
+})
+
+test.skip('POST /timeline/quest/:timelineName => bad parameters - no timelineName', async t => {
+  // TBD
+})
+
+test.skip('POST /timeline/quest/:timelineName => bad parameters - non-existent user', async t => {
+  // TBD
+})
+
+test.skip('POST /timeline/quest/:timelineName => bad parameters - non-existent timeline', async t => {
+  // TBD
+})
+
 test.onFinish(async t => {
   const conn = await fixtures()
   conn.close()
