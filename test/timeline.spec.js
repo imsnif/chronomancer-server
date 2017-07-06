@@ -11,7 +11,7 @@ function getPlayerItems (id, conn) {
       if (err) return reject(err)
       cursor.toArray((err, results) => {
         if (err) return reject(err)
-        resolve(results[0][0])
+        resolve(results[0])
       })
     })
   })
@@ -37,10 +37,10 @@ test('POST /timeline/quest/:timelineName => adds relevant item to player', async
     const userId = 1
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', 1)
+      .set('userId', userId)
       .expect(200)
     const playerItems = await getPlayerItems(userId, conn)
-    t.deepEquals(playerItems, {source: 'Timeline 1', name: 'steal'}, 'Item added to player')
+    t.deepEquals(playerItems, [{source: 'Timeline 1', name: 'steal'}], 'Item added to player')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -79,7 +79,7 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
     const playerActions = await getPlayerActions(userId, conn)
     t.deepEquals(
       playerItems,
-      {source: 'Timeline 2', name: 'assist'},
+      [{source: 'Timeline 2', name: 'assist'}],
       'item not added to player'
     )
     t.equals(playerActions, 0, 'actions remain at 0')
@@ -89,12 +89,25 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
   }
 })
 
-test.skip('POST /timeline/quest/:timelineName => when player already has item', async t => {
-  // TBD
-})
-
-test.skip('POST /timeline/quest/:timelineName => appends to existing item list', async t => {
-  // TBD
+test('POST /timeline/quest/:timelineName => appends to existing item list', async t => {
+  t.plan(1)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const userId = 2
+    await request(app)
+      .post('/timeline/quest/Timeline 1')
+      .set('userId', userId)
+      .expect(200)
+    const playerItems = await getPlayerItems(userId, conn)
+    t.deepEquals(playerItems, [
+      {source: 'Timeline 2', name: 'assist'},
+      {source: 'Timeline 1', name: 'steal'}
+    ], 'Item appended to player')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
 })
 
 test.onFinish(async t => {

@@ -9,21 +9,16 @@ module.exports = {
     {
       id: 1,
       gameId: 1,
-      name: 'Aram',
+      name: 'No-Items Susan',
       items: [],
       actions: 10
     },
     {
       id: 2,
       gameId: 1,
-      name: 'Tom',
+      name: 'One-Item Siobahn',
       items: [
-        {name: 'assist', source: 'Timeline 2'},
-        {name: 'prevent', source: 'Timeline 3'},
-        {name: 'reset', source: 'Timeline 3'},
-        {name: 'steal', source: 'Timeline 1'},
-        {name: 'lock', source: 'Timeline 1'},
-        {name: 'unlock', source: false}
+        {name: 'assist', source: 'Timeline 2'}
       ],
       actions: 10
     },
