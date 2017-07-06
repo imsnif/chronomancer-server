@@ -2,32 +2,8 @@
 
 const test = require('tape')
 const request = require('supertest')
-const r = require('rethinkdb')
 const fixtures = require('./fixtures')
-
-function getPlayerItems (id, conn) {
-  return new Promise((resolve, reject) => {
-    r.db('chronomancer').table('players').filter({id})('items').run(conn, (err, cursor) => {
-      if (err) return reject(err)
-      cursor.toArray((err, results) => {
-        if (err) return reject(err)
-        resolve(results[0])
-      })
-    })
-  })
-}
-
-function getPlayerActions (id, conn) {
-  return new Promise((resolve, reject) => {
-    r.db('chronomancer').table('players').filter({id})('actions').run(conn, (err, cursor) => {
-      if (err) return reject(err)
-      cursor.toArray((err, results) => {
-        if (err) return reject(err)
-        resolve(results[0])
-      })
-    })
-  })
-}
+const { getPlayerItems, getPlayerActions } = require('./test-utils')
 
 test('POST /timeline/quest/:timelineName => adds relevant item to player', async t => {
   t.plan(1)
