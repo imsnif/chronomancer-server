@@ -171,8 +171,3 @@ test('POST /timeline/quest/:timelineName => user not in timeline', async t => {
     t.fail(e.message)
   }
 })
-
-test.onFinish(async t => {
-  const conn = await fixtures()
-  conn.close()
-})
