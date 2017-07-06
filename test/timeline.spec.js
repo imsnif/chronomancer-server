@@ -152,8 +152,24 @@ test('POST /timeline/quest/:timelineName => bad parameters - non-existent timeli
   }
 })
 
-test.skip('POST /timeline/quest/:timelineName => user not in timeline', async t => {
-  // TBD
+test('POST /timeline/quest/:timelineName => user not in timeline', async t => {
+  t.plan(2)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const userId = 1
+    await request(app)
+      .post('/timeline/quest/Timeline 4')
+      .set('userId', userId)
+      .expect(403)
+    const playerItems = await getPlayerItems(userId, conn)
+    const playerActions = await getPlayerActions(userId, conn)
+    t.deepEquals(playerItems, [], 'item not added to player')
+    t.equals(playerActions, 10, 'actions remain at 10')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
 })
 
 test.onFinish(async t => {
