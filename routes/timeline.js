@@ -3,6 +3,7 @@ const express = require('express')
 const player = require('../service/player')
 const timeline = require('../service/timeline')
 const {
+  userExists,
   hasEnoughActions,
   validateAndSanitizeUserId
 } = require('../middleware/custom-validation')
@@ -15,6 +16,7 @@ module.exports = function timelineRoute (connection) {
   } = player(connection)
   const { getTimelineItemType } = timeline(connection)
   route.use(validateAndSanitizeUserId)
+  route.use(userExists(connection))
   route.use(hasEnoughActions(connection))
   route.post('/quest/:timelineName', async (req, res, next) => {
     try {

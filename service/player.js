@@ -33,6 +33,17 @@ module.exports = function playerService (connection) {
           })
         })
       })
+    },
+    getPlayer (id, conn) {
+      return new Promise((resolve, reject) => {
+        r.table('players').filter({id}).run(conn, (err, cursor) => {
+          if (err) return reject(err)
+          cursor.toArray((err, results) => {
+            if (err) return reject(err)
+            resolve(results[0])
+          })
+        })
+      })
     }
   }
 }

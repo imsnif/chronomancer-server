@@ -15,6 +15,19 @@ module.exports = {
       }
     }
   },
+  userExists (connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const userId = req.headers.userid
+      const player = await getPlayer(userId, connection)
+      if (!player) {
+        res.statusCode = 403
+        next('No such user')
+      } else {
+        next()
+      }
+    }
+  },
   async validateAndSanitizeUserId (req, res, next) {
     req.sanitizeHeaders('userId').toInt()
     req.checkHeaders('userId').notEmpty().isInt()

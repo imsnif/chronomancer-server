@@ -118,8 +118,21 @@ test('POST /timeline/quest/:timelineName => bad parameters - no timelineName', a
   }
 })
 
-test.skip('POST /timeline/quest/:timelineName => bad parameters - non-existent user', async t => {
-  // TBD
+test('POST /timeline/quest/:timelineName => bad parameters - non-existent user', async t => {
+  t.plan(1)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const userId = 99999
+    await request(app)
+      .post('/timeline/quest/Timeline 1')
+      .set('userId', userId)
+      .expect(403)
+    t.pass('request failed with a non-existent user')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
 })
 
 test.skip('POST /timeline/quest/:timelineName => bad parameters - non-existent timeline', async t => {
