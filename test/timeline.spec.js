@@ -86,8 +86,19 @@ test('POST /timeline/quest/:timelineName => appends to existing item list', asyn
   }
 })
 
-test.skip('POST /timeline/quest/:timelineName => bad parameters - no userId', async t => {
-  // TBD
+test('POST /timeline/quest/:timelineName => bad parameters - no userId', async t => {
+  t.plan(1)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    await request(app)
+      .post('/timeline/quest/Timeline 1')
+      .expect(400)
+    t.pass('request failed without a user id')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
 })
 
 test.skip('POST /timeline/quest/:timelineName => bad parameters - no timelineName', async t => {
