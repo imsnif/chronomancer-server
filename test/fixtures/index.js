@@ -2,6 +2,7 @@
 
 const r = require('rethinkdb')
 const mockData = require('./mock-data')
+let connection
 
 function insertData (name, data, connection) {
   return new Promise((resolve, reject) => {
@@ -14,10 +15,15 @@ function insertData (name, data, connection) {
 
 function getConnection () {
   return new Promise((resolve, reject) => {
-    r.connect((err, connection) => {
-      if (err) return reject(err)
+    if (!connection) {
+      r.connect((err, conn) => {
+        if (err) return reject(err)
+        connection = conn
+        resolve(connection)
+      })
+    } else {
       resolve(connection)
-    })
+    }
   })
 }
 

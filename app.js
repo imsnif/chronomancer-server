@@ -31,6 +31,18 @@ function appendItemToPlayer (userId, item, connection) {
   })
 }
 
+function decrementPlayerActions (userId, connection) {
+  const id = Number(userId)
+  return new Promise((resolve, reject) => {
+    r.table('players').filter({id}).update({
+      actions: r.row('actions').sub(1).default(0)
+    }).run(connection, (err, result) => {
+      if (err) return reject(err)
+      resolve(result)
+    })
+  })
+}
+
 module.exports = function (connection) {
   connection.use('chronomancer')
   app.post('/timeline/quest/:timelineName', async (req, res) => {
@@ -39,6 +51,7 @@ module.exports = function (connection) {
       const userId = req.headers.userid
       const itemType = await getTimelineItemType(timelineName, connection)
       await appendItemToPlayer(userId, {name: itemType, source: timelineName}, connection)
+      await decrementPlayerActions(userId, connection)
       res.sendStatus(200)
     } catch (e) {
       console.error(e.message)
