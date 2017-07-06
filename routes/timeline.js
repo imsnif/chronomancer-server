@@ -6,7 +6,8 @@ const {
   userExists,
   hasEnoughActions,
   validateAndSanitizeUserId,
-  timelineExists
+  timelineExists,
+  userInTimeline
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -22,12 +23,16 @@ module.exports = function timelineRoute (connection) {
   route.post(
     '/quest/:timelineName',
     timelineExists(connection),
+    userInTimeline(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
         const itemType = await getTimelineItemType(timelineName)
-        await appendItemToPlayer(userId, {name: itemType, source: timelineName}, connection)
+        await appendItemToPlayer(
+          userId,
+          {name: itemType, source: timelineName}, connection
+        )
         await decrementPlayerActions(userId, connection)
         res.sendStatus(200)
       } catch (e) {
