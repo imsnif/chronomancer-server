@@ -14,5 +14,17 @@ module.exports = {
         next()
       }
     }
+  },
+  async validateAndSanitizeUserId (req, res, next) {
+    req.sanitizeHeaders('userId').toInt()
+    req.checkHeaders('userId').notEmpty().isInt()
+    const result = await req.getValidationResult()
+    result.useFirstErrorOnly()
+    if (!result.isEmpty()) {
+      res.statusCode = 400
+      next(result.array()[0])
+    } else {
+      next()
+    }
   }
 }

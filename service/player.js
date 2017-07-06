@@ -3,8 +3,7 @@ const r = require('rethinkdb')
 
 module.exports = function playerService (connection) {
   return {
-    appendItemToPlayer (userId, item, connection) {
-      const id = Number(userId)
+    appendItemToPlayer (id, item, connection) {
       return new Promise((resolve, reject) => {
         r.table('players').filter({id}).update({
           items: r.row('items').append(item)
@@ -14,8 +13,7 @@ module.exports = function playerService (connection) {
         })
       })
     },
-    decrementPlayerActions (userId, connection) {
-      const id = Number(userId)
+    decrementPlayerActions (id, connection) {
       return new Promise((resolve, reject) => {
         r.table('players').filter({id}).update({
           actions: r.row('actions').sub(1).default(0)
@@ -25,8 +23,7 @@ module.exports = function playerService (connection) {
         })
       })
     },
-    getPlayerActions (userId, conn) {
-      const id = Number(userId)
+    getPlayerActions (id, conn) {
       return new Promise((resolve, reject) => {
         r.table('players').filter({id})('actions').run(conn, (err, cursor) => {
           if (err) return reject(err)

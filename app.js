@@ -1,10 +1,12 @@
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
+const expressValidator = require('express-validator')
 
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(expressValidator())
 app.use(errorHandler)
 
 function errorHandler (err, req, res, next) {
