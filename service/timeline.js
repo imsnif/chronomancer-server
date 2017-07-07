@@ -29,7 +29,7 @@ module.exports = function timelineService (connection) {
       return new Promise((resolve, reject) => {
         r.table('timelines').filter({name: timelineName})
         .update({isLocked: true})
-        .run(connection, (err, cursor) => {
+        .run(connection, async (err, cursor) => {
           if (err) return reject(err)
           resolve()
         })
@@ -68,6 +68,11 @@ module.exports = function timelineService (connection) {
           resolve()
         })
       })
+    },
+    async checkPlayerInTimeline (timelineName, playerId) {
+      const { getTimeline } = require('../service/timeline')(connection)
+      const { players } = await getTimeline(timelineName)
+      return players.includes(playerId)
     }
   }
 }

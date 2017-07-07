@@ -4,11 +4,11 @@ module.exports = function (connection) {
   const { lockTimeline } = require('../service/timeline')(connection)
   const { getPlayer } = require('../service/player')(connection)
   return {
-    locking: async job => {
-      if (!job || !job.timelineName) return Promise.resolve()
-      const player = await getPlayer(job.playerId)
+    locking: async power => {
+      if (!power || !power.timelineName) return Promise.resolve()
+      const player = await getPlayer(power.playerId)
       if (player.items.map(i => i.name).includes('lock')) {
-        return lockTimeline(job.timelineName)
+        return lockTimeline(power.timelineName)
       } else {
         return Promise.resolve()
       }
