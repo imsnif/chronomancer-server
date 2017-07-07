@@ -58,7 +58,8 @@ module.exports = {
       items: [
         {name: 'assist', source: 'Timeline 2'},
         {name: 'lock', source: 'Timeline 2'},
-        {name: 'unlock', source: 'Timeline 2'}
+        {name: 'unlock', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'}
       ],
       actions: 0
     }
