@@ -44,6 +44,18 @@ module.exports = function timelineService (connection) {
           resolve()
         })
       })
+    },
+    addPlayerToTimeline (timelineName, userId) {
+      return new Promise((resolve, reject) => {
+        r.table('timelines').filter({name: timelineName})
+        .update({
+          players: r.row('players').append(userId)
+        })
+        .run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
     }
   }
 }

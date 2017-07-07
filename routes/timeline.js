@@ -8,6 +8,7 @@ const {
   validateAndSanitizeUserId,
   timelineExists,
   userInTimeline,
+  userNotInTimeline,
   userHasItem,
   timelineIsUnlocked,
   timelineIsLocked
@@ -22,7 +23,8 @@ module.exports = function timelineRoute (connection) {
   const {
     getTimelineItemType,
     lockTimeline,
-    unlockTimeline
+    unlockTimeline,
+    addPlayerToTimeline
   } = timeline(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
@@ -76,6 +78,23 @@ module.exports = function timelineRoute (connection) {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
         await unlockTimeline(timelineName)
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/join/:timelineName',
+    timelineExists(connection),
+    userNotInTimeline(connection),
+    timelineIsUnlocked(connection),
+    async (req, res, next) => {
+      try {
+        const timelineName = req.params.timelineName
+        const userId = req.headers.userid
+        await addPlayerToTimeline(timelineName, userId)
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {

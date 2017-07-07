@@ -56,6 +56,20 @@ module.exports = {
       }
     }
   },
+  userNotInTimeline (connection) {
+    const { getTimeline } = timeline(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const userId = req.headers.userid
+      const timelineName = req.params.timelineName
+      const timeline = await getTimeline(timelineName)
+      if (timeline.players.includes(userId)) {
+        res.statusCode = 403
+        next('User already in timeline')
+      } else {
+        next()
+      }
+    }
+  },
   async validateAndSanitizeUserId (req, res, next) {
     req.sanitizeHeaders('userId').toInt()
     req.checkHeaders('userId').notEmpty().isInt()
