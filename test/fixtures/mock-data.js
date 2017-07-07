@@ -4,7 +4,7 @@ module.exports = {
     {name: 'Timeline 2', type: 'assist', players: [2, 3], isLocked: false, gameId: 1},
     {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], isLocked: false, gameId: 1},
     {name: 'Timeline 4', type: 'reset', isLocked: false, players: []},
-    {name: 'Timeline 5', type: 'assist', players: [2, 3], isLocked: true, gameId: 1}
+    {name: 'Timeline 5', type: 'assist', players: [1, 2, 3, 5], isLocked: true, gameId: 1}
   ],
   players: [
     {
@@ -56,7 +56,9 @@ module.exports = {
       gameId: 1,
       name: 'No-Actions Bob',
       items: [
-        {name: 'assist', source: 'Timeline 2'}
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'lock', source: 'Timeline 2'},
+        {name: 'unlock', source: 'Timeline 2'}
       ],
       actions: 0
     }
