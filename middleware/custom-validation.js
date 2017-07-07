@@ -94,5 +94,18 @@ module.exports = {
         next()
       }
     }
+  },
+  timelineIsLocked (connection) {
+    const { getTimeline } = timeline(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const timelineName = req.params.timelineName
+      const timeline = await getTimeline(timelineName)
+      if (timeline.isLocked) {
+        next()
+      } else {
+        res.statusCode = 403
+        next('Timeline is unlocked')
+      }
+    }
   }
 }

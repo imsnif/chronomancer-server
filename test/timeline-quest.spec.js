@@ -55,7 +55,11 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
     const playerActions = await getPlayerActions(userId, conn)
     t.deepEquals(
       playerItems,
-      [{source: 'Timeline 2', name: 'assist'}],
+      [
+        { name: 'assist', source: 'Timeline 2' },
+        { name: 'lock', source: 'Timeline 2' },
+        { name: 'unlock', source: 'Timeline 2' }
+      ],
       'item not added to player'
     )
     t.equals(playerActions, 0, 'actions remain at 0')

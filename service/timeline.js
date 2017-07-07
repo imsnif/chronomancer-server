@@ -34,6 +34,16 @@ module.exports = function timelineService (connection) {
           resolve()
         })
       })
+    },
+    unlockTimeline (timelineName) {
+      return new Promise((resolve, reject) => {
+        r.table('timelines').filter({name: timelineName})
+        .update({isLocked: false})
+        .run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
     }
   }
 }

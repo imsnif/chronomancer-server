@@ -9,7 +9,8 @@ const {
   timelineExists,
   userInTimeline,
   userHasItem,
-  timelineIsUnlocked
+  timelineIsUnlocked,
+  timelineIsLocked
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -18,7 +19,11 @@ module.exports = function timelineRoute (connection) {
     decrementPlayerActions,
     appendItemToPlayer
   } = player(connection)
-  const { getTimelineItemType, lockTimeline } = timeline(connection)
+  const {
+    getTimelineItemType,
+    lockTimeline,
+    unlockTimeline
+  } = timeline(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
   route.use(hasEnoughActions(connection))
@@ -53,6 +58,24 @@ module.exports = function timelineRoute (connection) {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
         await lockTimeline(timelineName)
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/unlock/:timelineName',
+    timelineExists(connection),
+    userInTimeline(connection),
+    userHasItem('unlock', connection),
+    timelineIsLocked(connection),
+    async (req, res, next) => {
+      try {
+        const timelineName = req.params.timelineName
+        const userId = req.headers.userid
+        await unlockTimeline(timelineName)
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {
