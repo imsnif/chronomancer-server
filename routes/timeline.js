@@ -16,7 +16,7 @@ module.exports = function timelineRoute (connection) {
     decrementPlayerActions,
     appendItemToPlayer
   } = player(connection)
-  const { getTimelineItemType } = timeline(connection)
+  const { getTimelineItemType, lockTimeline } = timeline(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
   route.use(hasEnoughActions(connection))
@@ -33,11 +33,28 @@ module.exports = function timelineRoute (connection) {
           userId,
           {name: itemType, source: timelineName}, connection
         )
-        await decrementPlayerActions(userId, connection)
+        await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
       }
-    })
+    }
+  )
+  route.post(
+    '/lock/:timelineName',
+    timelineExists(connection),
+    userInTimeline(connection),
+    async (req, res, next) => {
+      try {
+        const timelineName = req.params.timelineName
+        const userId = req.headers.userid
+        await lockTimeline(timelineName)
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
   return route
 }
