@@ -1,9 +1,9 @@
 module.exports = {
   timelines: [
-    {name: 'Timeline 1', type: 'steal', players: [1, 2, 3, 4], gameId: 1},
-    {name: 'Timeline 2', type: 'assist', players: [2, 3], gameId: 1},
-    {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], gameId: 1},
-    {name: 'Timeline 4', type: 'reset', players: []}
+    {name: 'Timeline 1', type: 'steal', players: [1, 2, 3, 4], isLocked: false, gameId: 1},
+    {name: 'Timeline 2', type: 'assist', players: [2, 3], isLocked: false, gameId: 1},
+    {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], isLocked: false, gameId: 1},
+    {name: 'Timeline 4', type: 'reset', isLocked: false, players: []}
   ],
   players: [
     {

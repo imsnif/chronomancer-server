@@ -24,5 +24,16 @@ module.exports = {
         })
       })
     })
+  },
+  getTimeline (name, conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('timelines').filter({name}).run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        cursor.toArray((err, results) => {
+          if (err) return reject(err)
+          resolve(results[0])
+        })
+      })
+    })
   }
 }
