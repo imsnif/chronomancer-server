@@ -7,7 +7,9 @@ const {
   hasEnoughActions,
   validateAndSanitizeUserId,
   timelineExists,
-  userInTimeline
+  userInTimeline,
+  userHasItem,
+  timelineIsUnlocked
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -44,6 +46,8 @@ module.exports = function timelineRoute (connection) {
     '/lock/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    userHasItem('lock', connection),
+    timelineIsUnlocked(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName

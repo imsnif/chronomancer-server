@@ -67,5 +67,32 @@ module.exports = {
     } else {
       next()
     }
+  },
+  userHasItem (itemName, connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserHasItem (req, res, next) {
+      const userId = req.headers.userid
+      const player = await getPlayer(userId, connection)
+      const hasItem = player.items.map(i => i.name).includes(itemName)
+      if (!hasItem) {
+        res.statusCode = 403
+        next(`User does not have the ${itemName} item`)
+      } else {
+        next()
+      }
+    }
+  },
+  timelineIsUnlocked (connection) {
+    const { getTimeline } = timeline(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const timelineName = req.params.timelineName
+      const timeline = await getTimeline(timelineName)
+      if (timeline.isLocked) {
+        res.statusCode = 403
+        next('Timeline is locked')
+      } else {
+        next()
+      }
+    }
   }
 }
