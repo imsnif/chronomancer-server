@@ -56,6 +56,18 @@ module.exports = function timelineService (connection) {
           resolve()
         })
       })
+    },
+    removeOtherPlayersFromTimeline (timelineName, userId) {
+      return new Promise((resolve, reject) => {
+        r.table('timelines').filter({name: timelineName})
+        .update({
+          players: [userId]
+        })
+        .run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
     }
   }
 }

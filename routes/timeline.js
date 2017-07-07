@@ -24,7 +24,8 @@ module.exports = function timelineRoute (connection) {
     getTimelineItemType,
     lockTimeline,
     unlockTimeline,
-    addPlayerToTimeline
+    addPlayerToTimeline,
+    removeOtherPlayersFromTimeline
   } = timeline(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
@@ -95,6 +96,23 @@ module.exports = function timelineRoute (connection) {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
         await addPlayerToTimeline(timelineName, userId)
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/reset/:timelineName',
+    timelineExists(connection),
+    userInTimeline(connection),
+    userHasItem('reset', connection),
+    async (req, res, next) => {
+      try {
+        const timelineName = req.params.timelineName
+        const userId = req.headers.userid
+        await removeOtherPlayersFromTimeline(timelineName, userId)
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {
