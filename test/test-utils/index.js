@@ -35,5 +35,28 @@ module.exports = {
         })
       })
     })
+  },
+  createPower (power, conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('powers')
+      .insert(power)
+      .run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
+  },
+  getPower (userId, timelineName, conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('powers')
+      .filter({userId, timelineName})
+      .run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        cursor.toArray((err, results) => {
+          if (err) return reject(err)
+          resolve(results[0])
+        })
+      })
+    })
   }
 }
