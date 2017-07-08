@@ -2,22 +2,24 @@
 
 const test = require('tape')
 const fixtures = require('./fixtures')
+const jobsFactory = require('../jobs')
 const { getTimeline, createPower, getPower } = require('./test-utils')
 
 test('Lock power resolution => success', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
-    const jobs = require('../jobs')(conn)
+    const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
     const playerId = 3
+    const now = new Date()
     await createPower({
       playerId,
       gameId: 1,
       timelineName,
       name: 'Locking',
-      startTime: Date.now(),
-      endTime: Date.now(),
+      startTime: now.getTime(),
+      endTime: now.getTime(),
       target: {
         type: 'timeline',
         name: timelineName
@@ -40,16 +42,17 @@ test('Lock power resolution => failure (negative score)', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
-    const jobs = require('../jobs')(conn)
+    const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
     const playerId = 3
+    const now = new Date()
     await createPower({
       playerId,
       gameId: 1,
       timelineName,
       name: 'Locking',
-      startTime: Date.now(),
-      endTime: Date.now(),
+      startTime: now.getTime(),
+      endTime: now.getTime(),
       target: {
         type: 'timeline',
         name: timelineName
@@ -72,16 +75,17 @@ test('Lock power resolution => failure (item no longer exists)', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
-    const jobs = require('../jobs')(conn)
+    const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
     const playerId = 1
+    const now = new Date()
     await createPower({
       playerId,
       gameId: 1,
       timelineName,
       name: 'Locking',
-      startTime: Date.now(),
-      endTime: Date.now(),
+      startTime: now.getTime(),
+      endTime: now.getTime(),
       target: {
         type: 'timeline',
         name: timelineName
@@ -104,16 +108,17 @@ test('Lock power resolution => failure (player no longer in timeline)', async t 
   t.plan(2)
   try {
     const conn = await fixtures()
-    const jobs = require('../jobs')(conn)
+    const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 4'
     const playerId = 3
+    const now = new Date()
     await createPower({
       playerId,
       gameId: 1,
       timelineName,
       name: 'Locking',
-      startTime: Date.now(),
-      endTime: Date.now(),
+      startTime: now.getTime(),
+      endTime: now.getTime(),
       target: {
         type: 'timeline',
         name: timelineName

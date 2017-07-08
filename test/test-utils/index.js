@@ -58,5 +58,17 @@ module.exports = {
         })
       })
     })
+  },
+  getAllPowers (conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('powers')
+      .run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        cursor.toArray((err, results) => {
+          if (err) return reject(err)
+          resolve(results)
+        })
+      })
+    })
   }
 }
