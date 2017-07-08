@@ -18,7 +18,9 @@ module.exports = function (connection) {
     },
     getPowersToResolve () {
       return new Promise((resolve, reject) => {
+        const now = new Date()
         r.table('powers').filter({gameId: 1})
+        .filter(r.row('endTime').lt(now.getTime()))
         .run(connection, (err, cursor) => {
           if (err) return reject(err)
           cursor.toArray(async (err, powers) => {
