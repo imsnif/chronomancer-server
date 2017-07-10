@@ -208,7 +208,7 @@ test('POST /timeline/unlock/:timelineName => timeline not locked', async t => {
   }
 })
 
-test('POST /timeline/lock/:timelineName => user busy (has power) in timeline', async t => {
+test('POST /timeline/unlock/:timelineName => user busy (has power) in timeline', async t => {
   t.plan(3)
   try {
     const conn = await fixtures()

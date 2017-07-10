@@ -3,10 +3,16 @@
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerActions, getTimeline } = require('./test-utils')
+const {
+  getPlayerActions,
+  getPower,
+  validatePowerTimes,
+  createPower,
+  getAllUserPowers
+} = require('./test-utils')
 
 test('POST /timeline/reset/:timelineName => resets timeline with existing players', async t => {
-  t.plan(1)
+  t.plan(2)
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
@@ -16,26 +22,23 @@ test('POST /timeline/reset/:timelineName => resets timeline with existing player
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
       .expect(200)
-    const timeline = await getTimeline(timelineName, conn)
-    t.deepEquals(timeline.players, [3], 'all other players removed from timeline')
-  } catch (e) {
-    console.error(e.stack)
-    t.fail(e.message)
-  }
-})
-
-test('POST /timeline/reset/:timelineName => costs 1 action', async t => {
-  t.plan(1)
-  try {
-    const conn = await fixtures()
-    const app = require('../app')(conn)
-    const timelineName = 'Timeline 1'
-    const userId = 3
-    await request(app)
-      .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
-      .expect(200)
+    const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
+    const expectedPower = {
+      playerId: userId,
+      gameId: 1,
+      timelineName,
+      name: 'Resetting',
+      startTime: true,
+      endTime: true,
+      target: {
+        type: 'timeline',
+        name: timelineName
+      },
+      allies: [],
+      enemies: []
+    }
+    t.deepEquals(validatePowerTimes(power), expectedPower, 'power created properly')
     t.equals(actions, 9, 'one action was decremented')
   } catch (e) {
     console.error(e.stack)
@@ -54,10 +57,10 @@ test('POST /timeline/reset/:timelineName => with no actions left', async t => {
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
       .expect(403)
-    const timeline = await getTimeline(timelineName, conn)
+    const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 0, 'actions remain at 0')
-    t.deepEquals(timeline.players.sort(), [1, 2, 3, 5].sort(), 'timeline players remain the same')
+    t.notOk(power, 'power not created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -75,10 +78,10 @@ test('POST /timeline/reset/:timelineName => with no reset item', async t => {
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
       .expect(403)
-    const timeline = await getTimeline(timelineName, conn)
+    const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 10, 'actions not decremented')
-    t.deepEquals(timeline.players.sort(), [1, 2, 3, 5].sort(), 'timeline players remain the same')
+    t.notOk(power, 'power not created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -162,10 +165,46 @@ test('POST /timeline/reset/:timelineName => user not in timeline', async t => {
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
       .expect(403)
-    const timeline = await getTimeline(timelineName, conn)
+    const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 10, 'actions not decremented')
-    t.deepEquals(timeline.players, [], 'timeline players unchanged')
+    t.notOk(power, 'power not created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/reset/:timelineName => user busy (has power) in timeline', async t => {
+  t.plan(2)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 5'
+    const userId = 3
+    const now = new Date()
+    await createPower({
+      playerId: userId,
+      gameId: 1,
+      timelineName,
+      name: 'Locking',
+      startTime: now.getTime(),
+      endTime: now.getTime() + 10000,
+      target: {
+        type: 'timeline',
+        name: timelineName
+      },
+      allies: [],
+      enemies: []
+    }, conn)
+    await request(app)
+      .post(`/timeline/reset/${timelineName}`)
+      .set('userId', userId)
+      .expect(403)
+    const power = await getAllUserPowers(userId, timelineName, conn)
+    const actions = await getPlayerActions(userId, conn)
+    t.equals(actions, 10, 'actions not decremented')
+    t.equals(power.length, 1, 'power not created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
