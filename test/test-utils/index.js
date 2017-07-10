@@ -1,6 +1,8 @@
 'use strict'
 
 const r = require('rethinkdb')
+const { powerDurations } = require('../../config')
+const _ = require('lodash')
 
 module.exports = {
   getPlayerItems (id, conn) {
@@ -49,12 +51,25 @@ module.exports = {
   getPower (userId, timelineName, conn) {
     return new Promise((resolve, reject) => {
       r.db('chronomancer').table('powers')
-      .filter({userId, timelineName})
+      .filter({playerId: userId, timelineName})
       .run(conn, (err, cursor) => {
         if (err) return reject(err)
         cursor.toArray((err, results) => {
           if (err) return reject(err)
           resolve(results[0])
+        })
+      })
+    })
+  },
+  getAllUserPowers (userId, timelineName, conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('powers')
+      .filter({playerId: userId, timelineName})
+      .run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        cursor.toArray((err, results) => {
+          if (err) return reject(err)
+          resolve(results)
         })
       })
     })
@@ -70,5 +85,16 @@ module.exports = {
         })
       })
     })
+  },
+  validatePowerTimes (power) {
+    const duration = powerDurations[power.name]
+    const range = 1000
+    const now = new Date()
+    const formatted = Object.assign({}, power, {
+      startTime: (power && power.startTime + range > now.getTime()) || false,
+      endTime: (power && power.endTime + range > now.getTime() + duration) || false
+    })
+    return _.omit(formatted, ['id'])
   }
+
 }

@@ -5,9 +5,6 @@ const fixtures = require('./fixtures')
 const proxyquire = require('proxyquire')
 const sinon = require('sinon')
 const { createPower, getAllPowers } = require('./test-utils')
-//
-// TODO: CONTINUE HERE with these tests, then write general test for powers to make sure they are resolved with cron (all deleted, corrupted powers, only resolve and delete powers whose end time has passed, etc.)
-// then adjust timeline tests so that they create powers, then adjust feature, then move on to bidding
 
 function getMockedJobs (handle) {
   return proxyquire('../jobs', {
