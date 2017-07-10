@@ -1,10 +1,14 @@
+'use strict'
+const now = new Date()
+
 module.exports = {
   timelines: [
     {name: 'Timeline 1', type: 'steal', players: [1, 2, 3, 4], isLocked: false, gameId: 1},
     {name: 'Timeline 2', type: 'assist', players: [2, 3], isLocked: false, gameId: 1},
     {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], isLocked: false, gameId: 1},
     {name: 'Timeline 4', type: 'reset', isLocked: false, players: []},
-    {name: 'Timeline 5', type: 'assist', players: [1, 2, 3, 5], isLocked: true, gameId: 1}
+    {name: 'Timeline 5', type: 'assist', players: [1, 2, 3, 5], isLocked: true, gameId: 1},
+    {name: 'Timeline 6', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1}
   ],
   players: [
     {
@@ -64,5 +68,48 @@ module.exports = {
       actions: 0
     }
   ],
-  powers: []
+  powers: [
+    {
+      playerId: 1,
+      name: 'Locking',
+      timelineName: 'Timeline 6',
+      gameId: 1,
+      startTime: now.getTime(),
+      endTime: now.getTime() + 1000,
+      target: {
+        type: 'timeline',
+        name: 'Timeline 6'
+      },
+      allies: [],
+      enemies: []
+    },
+    {
+      playerId: 2,
+      name: 'Resetting',
+      timelineName: 'Timeline 6',
+      gameId: 1,
+      startTime: now.getTime(),
+      endTime: now.getTime() + 1000,
+      target: {
+        type: 'timeline',
+        name: 'Timeline 6'
+      },
+      allies: [{id: 3, score: 1}],
+      enemies: []
+    },
+    {
+      playerId: 3,
+      name: 'Resetting',
+      timelineName: 'Timeline 6',
+      gameId: 1,
+      startTime: now.getTime(),
+      endTime: now.getTime() + 1000,
+      target: {
+        type: 'timeline',
+        name: 'Timeline 6'
+      },
+      allies: [],
+      enemies: []
+    }
+  ]
 }

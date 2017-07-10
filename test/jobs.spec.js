@@ -25,6 +25,7 @@ test('Multiple relevant jobs are resolved and deleted', async t => {
     const timelineName = 'Timeline 1'
     const playerId = 3
     const now = new Date()
+    const powersBefore = await getAllPowers(conn)
     const power = {
       playerId,
       gameId: 1,
@@ -42,7 +43,7 @@ test('Multiple relevant jobs are resolved and deleted', async t => {
     }
     await jobs()
     const powers = await getAllPowers(conn)
-    t.equals(powers.length, 0, 'all powers deleted')
+    t.equals(powers.length, powersBefore.length, 'all powers deleted')
     t.ok(
       handle.foo0.calledWith(Object.assign({}, power, {id: 'Foo0', name: 'Foo0'})),
       'First handler called properly'
@@ -74,6 +75,7 @@ test('Unfinished jobs are not resolved or deleted', async t => {
     const timelineName = 'Timeline 1'
     const playerId = 3
     const now = new Date()
+    const powersBefore = await getAllPowers(conn)
     const power = {
       playerId,
       gameId: 1,
@@ -91,7 +93,7 @@ test('Unfinished jobs are not resolved or deleted', async t => {
     }
     await jobs()
     const powers = await getAllPowers(conn)
-    t.equals(powers.length, 3, 'powers were not deleted')
+    t.equals(powers.length, powersBefore.length + 3, 'powers were not deleted')
     t.ok(Object.keys(handle).every(k => handle[k].notCalled), 'No jobs were triggered')
   } catch (e) {
     console.error(e.stack)
@@ -110,6 +112,7 @@ test('Corrupted jobs are ignored and do not affect other jobs', async t => {
     const timelineName = 'Timeline 1'
     const playerId = 3
     const now = new Date()
+    const powersBefore = await getAllPowers(conn)
     const power = {
       playerId,
       gameId: 1,
@@ -134,7 +137,7 @@ test('Corrupted jobs are ignored and do not affect other jobs', async t => {
     )
     await jobs()
     const powers = await getAllPowers(conn)
-    t.deepEquals(powers, [corruptedPower], 'only corrupted power remains')
+    t.deepEquals(powers.length, powersBefore.concat([corruptedPower]).length, 'only corrupted power remains')
     t.ok(
       handle.foo.calledOnce,
       'Remaining power handled normally'
@@ -156,6 +159,7 @@ test('Negative score jobs are deleted and not resolved', async t => {
     const timelineName = 'Timeline 1'
     const playerId = 3
     const now = new Date()
+    const powersBefore = await getAllPowers(conn)
     const power = {
       playerId,
       gameId: 1,
@@ -171,7 +175,7 @@ test('Negative score jobs are deleted and not resolved', async t => {
     )
     await jobs()
     const powers = await getAllPowers(conn)
-    t.equals(powers.length, 0, 'power deleted')
+    t.equals(powers.length, powersBefore.length, 'power deleted')
     t.ok(
       handle.foo.notCalled,
       'Failed power does not resolve'
