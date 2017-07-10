@@ -16,6 +16,8 @@ app.use(errorHandler)
 module.exports = function (connection) {
   connection.use('chronomancer')
   const timeline = require('./routes/timeline')(connection)
+  const bidding = require('./routes/bidding')(connection)
   app.use('/timeline', timeline)
+  app.use('/bidding', bidding)
   return app
 }

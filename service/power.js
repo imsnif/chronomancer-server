@@ -65,6 +65,29 @@ module.exports = function (connection) {
           })
         })
       })
+    },
+    addAlly (allyId, timelineName, playerId) {
+      const aId = Number(allyId)
+      return new Promise((resolve, reject) => {
+        r.table('powers')
+        .filter({gameId: 1, timelineName, playerId})
+        .update({
+          allies: r.branch(
+            r.row('allies').map(a => a('id')).contains(aId), // already contains aId
+            r.row('allies').map(a => { // find aId and increment score by 1
+              return r.branch(
+                a('id').eq(aId),
+                a.merge({score: a('score').add(1)}),
+                a
+              )
+            }),
+            r.row('allies').append({id: aId, score: 1}) // append aId with score of 1
+          )
+        }).run(connection, (err, result) => {
+          if (err) return reject(err)
+          resolve(result)
+        })
+      })
     }
   }
 }

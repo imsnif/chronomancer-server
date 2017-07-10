@@ -43,6 +43,32 @@ module.exports = {
       }
     }
   },
+  powerExists (connection) {
+    const { getPower } = power(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const { targetPlayerId, timelineName } = req.params
+      const power = await getPower(Number(targetPlayerId), timelineName)
+      if (!power) {
+        res.statusCode = 403
+        next('No such power')
+      } else {
+        next()
+      }
+    }
+  },
+  targetPlayerExists (connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const targetPlayerId = Number(req.params.targetPlayerId)
+      const player = await getPlayer(targetPlayerId, connection)
+      if (!player) {
+        res.statusCode = 403
+        next('No such targetPlayer')
+      } else {
+        next()
+      }
+    }
+  },
   userInTimeline (connection) {
     const { getTimeline } = timeline(connection)
     return async function checkIfUserExists (req, res, next) {
