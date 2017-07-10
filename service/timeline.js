@@ -69,6 +69,22 @@ module.exports = function timelineService (connection) {
         })
       })
     },
+    removePlayersItemsFromTimeline (timelineName, playerIds) {
+      return new Promise((resolve, reject) => {
+        r.table('players')
+        .getAll(r.args(playerIds))
+        .update((row) => {
+          return {
+            'items': row('items')
+              .filter((item) => item('source').ne(timelineName))
+          }
+        })
+        .run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          resolve()
+        })
+      })
+    },
     async checkPlayerInTimeline (timelineName, playerId) {
       const { getTimeline } = require('../service/timeline')(connection)
       const { players } = await getTimeline(timelineName)
