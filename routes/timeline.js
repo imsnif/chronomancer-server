@@ -24,7 +24,6 @@ module.exports = function timelineRoute (connection) {
   } = player(connection)
   const {
     getTimelineItemType,
-    unlockTimeline,
     addPlayerToTimeline,
     removeOtherPlayersFromTimeline
   } = timeline(connection)
@@ -81,13 +80,18 @@ module.exports = function timelineRoute (connection) {
     '/unlock/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    userHasNoPowerInTimeline(connection),
     userHasItem('unlock', connection),
     timelineIsLocked(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
-        await unlockTimeline(timelineName)
+        await createPower({
+          playerId: userId,
+          name: 'Unlocking',
+          timelineName
+        })
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {

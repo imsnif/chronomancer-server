@@ -1,5 +1,6 @@
 {
   "powerDurations": {
-    "Locking": 10000
+    "Locking": 10000,
+    "Unlocking": 10000
   }
 }
