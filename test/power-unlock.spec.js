@@ -38,7 +38,7 @@ test('Unlock power resolution => success', async t => {
   }
 })
 
-test('Lock power resolution => failure (negative score)', async t => {
+test('Unlock power resolution => failure (negative score)', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
@@ -71,7 +71,7 @@ test('Lock power resolution => failure (negative score)', async t => {
   }
 })
 
-test('Lock power resolution => failure (item no longer exists)', async t => {
+test('Unlock power resolution => failure (item no longer exists)', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
@@ -104,7 +104,7 @@ test('Lock power resolution => failure (item no longer exists)', async t => {
   }
 })
 
-test('Lock power resolution => failure (player no longer in timeline)', async t => {
+test('Unlock power resolution => failure (player no longer in timeline)', async t => {
   t.plan(2)
   try {
     const conn = await fixtures()
@@ -116,7 +116,7 @@ test('Lock power resolution => failure (player no longer in timeline)', async t 
       playerId,
       gameId: 1,
       timelineName,
-      name: 'Locking',
+      name: 'Unlocking',
       startTime: now.getTime(),
       endTime: now.getTime(),
       target: {
