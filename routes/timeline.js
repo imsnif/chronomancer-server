@@ -2,6 +2,7 @@
 const express = require('express')
 const player = require('../service/player')
 const timeline = require('../service/timeline')
+const power = require('../service/power')
 const {
   userExists,
   hasEnoughActions,
@@ -11,7 +12,8 @@ const {
   userNotInTimeline,
   userHasItem,
   timelineIsUnlocked,
-  timelineIsLocked
+  timelineIsLocked,
+  userHasNoPowerInTimeline
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -22,11 +24,13 @@ module.exports = function timelineRoute (connection) {
   } = player(connection)
   const {
     getTimelineItemType,
-    lockTimeline,
     unlockTimeline,
     addPlayerToTimeline,
     removeOtherPlayersFromTimeline
   } = timeline(connection)
+  const {
+    createPower
+  } = power(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
   route.use(hasEnoughActions(connection))
@@ -54,13 +58,18 @@ module.exports = function timelineRoute (connection) {
     '/lock/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    userHasNoPowerInTimeline(connection),
     userHasItem('lock', connection),
     timelineIsUnlocked(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
-        await lockTimeline(timelineName)
+        await createPower({
+          playerId: userId,
+          name: 'Locking',
+          timelineName
+        })
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {

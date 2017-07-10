@@ -1,6 +1,7 @@
 'use strict'
 const player = require('../service/player')
 const timeline = require('../service/timeline')
+const power = require('../service/power')
 
 module.exports = {
   hasEnoughActions (connection) {
@@ -53,6 +54,20 @@ module.exports = {
       } else {
         res.statusCode = 403
         next('User not in timeline')
+      }
+    }
+  },
+  userHasNoPowerInTimeline (connection) {
+    const { getPower } = power(connection)
+    return async function checkIfUserIsNotBusy (req, res, next) {
+      const userId = req.headers.userid
+      const timelineName = req.params.timelineName
+      const power = await getPower(userId, timelineName)
+      if (!power) {
+        next()
+      } else {
+        res.statusCode = 403
+        next(`User is busy ${power.name} in timeline ${timelineName}`)
       }
     }
   },
