@@ -24,8 +24,7 @@ module.exports = function timelineRoute (connection) {
   } = player(connection)
   const {
     getTimelineItemType,
-    addPlayerToTimeline,
-    removeOtherPlayersFromTimeline
+    addPlayerToTimeline
   } = timeline(connection)
   const {
     createPower
@@ -120,12 +119,17 @@ module.exports = function timelineRoute (connection) {
     '/reset/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    userHasNoPowerInTimeline(connection),
     userHasItem('reset', connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
         const userId = req.headers.userid
-        await removeOtherPlayersFromTimeline(timelineName, userId)
+        await createPower({
+          playerId: userId,
+          name: 'Resetting',
+          timelineName
+        })
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {
