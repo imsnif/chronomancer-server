@@ -95,6 +95,23 @@ module.exports = {
       endTime: (power && power.endTime + range > now.getTime() + duration) || false
     })
     return _.omit(formatted, ['id'])
+  },
+  sortData (a, b) {
+    const criteria = a.playerId && b.playerId ? 'playerId' : 'name'
+    return a[criteria] > b[criteria] ? -1 : 1
+  },
+  failureTimeout (t) {
+    return setTimeout(() => {
+      t.fail('Timed out')
+      t.end()
+    }, 10000)
+  },
+  insertFakeData (tableName, data, connection) {
+    return new Promise((resolve, reject) => {
+      r.table(tableName).insert(data).run(connection, err => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
   }
-
 }
