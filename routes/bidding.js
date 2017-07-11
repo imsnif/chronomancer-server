@@ -13,7 +13,7 @@ const {
 
 module.exports = function biddingRoute (connection) {
   const route = express.Router()
-  const { addAlly } = require('../service/power')(connection)
+  const { addAlly, addEnemy } = require('../service/power')(connection)
   const { decrementPlayerActions } = require('../service/player')(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
@@ -31,6 +31,26 @@ module.exports = function biddingRoute (connection) {
         const targetPlayerId = Number(req.params.targetPlayerId)
         const userId = req.headers.userid
         await addAlly(userId, timelineName, targetPlayerId)
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/prevent/:timelineName/:targetPlayerId',
+    timelineExists(connection),
+    targetPlayerExists(connection),
+    powerExists(connection),
+    userInTimeline(connection),
+    userHasItem('prevent', connection),
+    async (req, res, next) => {
+      try {
+        const { timelineName } = req.params
+        const targetPlayerId = Number(req.params.targetPlayerId)
+        const userId = req.headers.userid
+        await addEnemy(userId, timelineName, targetPlayerId)
         await decrementPlayerActions(userId)
         res.sendStatus(200)
       } catch (e) {

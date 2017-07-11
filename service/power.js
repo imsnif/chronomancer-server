@@ -88,6 +88,29 @@ module.exports = function (connection) {
           resolve(result)
         })
       })
+    },
+    addEnemy (enemyId, timelineName, playerId) {
+      const eId = Number(enemyId)
+      return new Promise((resolve, reject) => {
+        r.table('powers')
+        .filter({gameId: 1, timelineName, playerId})
+        .update({
+          enemies: r.branch(
+            r.row('enemies').map(e => e('id')).contains(eId), // already contains eId
+            r.row('enemies').map(e => { // find eId and increment score by 1
+              return r.branch(
+                e('id').eq(eId),
+                e.merge({score: e('score').add(1)}),
+                e
+              )
+            }),
+            r.row('enemies').append({id: eId, score: 1}) // append eId with score of 1
+          )
+        }).run(connection, (err, result) => {
+          if (err) return reject(err)
+          resolve(result)
+        })
+      })
     }
   }
 }
