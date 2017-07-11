@@ -95,7 +95,7 @@ module.exports = {
         name: 'Timeline 6'
       },
       allies: [{id: 3, score: 1}],
-      enemies: []
+      enemies: [{id: 3, score: 1}]
     },
     {
       playerId: 3,
