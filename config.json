@@ -3,5 +3,8 @@
     "Locking": 10000,
     "Unlocking": 10000,
     "Resetting": 10000
-  }
+  },
+  "tables": [
+    "players", "powers", "timelines"
+  ]
 }
