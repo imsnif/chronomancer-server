@@ -13,7 +13,7 @@ module.exports = async function mockServer (connection) {
   await new Promise(resolve => {
     server.listen(1337, resolve)
   })
-  wss = await require('../../channel')(server, connection)
+  wss = require('../../channel')(server, connection)
   const client = new WebSocket('ws://localhost:1337')
   client.on('error', () => {}) // Do not paste to production code! This is a mock!
   return Promise.resolve({

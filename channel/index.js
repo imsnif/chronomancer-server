@@ -32,5 +32,5 @@ module.exports = function (server, connection) {
       cursor.close()
     })
   })
-  return Promise.resolve(wss)
+  return wss
 }
