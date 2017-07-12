@@ -2,6 +2,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
+const path = require('path')
 
 function errorHandler (err, req, res, next) {
   res.send(res.statusCode || 500).json({error: err.msg})
@@ -19,5 +20,6 @@ module.exports = function (connection) {
   const bidding = require('./routes/bidding')(connection)
   app.use('/timeline', timeline)
   app.use('/bidding', bidding)
+  app.use(express.static(path.join(__dirname, 'public')))
   return app
 }
