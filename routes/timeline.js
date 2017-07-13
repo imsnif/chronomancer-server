@@ -149,7 +149,7 @@ module.exports = function timelineRoute (connection) {
     targetPlayerHasItem(connection),
     async (req, res, next) => {
       try {
-        const timelineName = req.params.timelineName
+        const { timelineName, itemName } = req.params
         const targetPlayerId = Number(req.params.targetPlayerId)
         const userId = req.headers.userid
         await createPower({
@@ -159,6 +159,7 @@ module.exports = function timelineRoute (connection) {
             type: 'player',
             id: targetPlayerId
           },
+          itemName,
           timelineName
         })
         await decrementPlayerActions(userId)

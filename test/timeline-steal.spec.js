@@ -27,6 +27,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates re
     const actions = await getPlayerActions(userId, conn)
     const expectedPower = {
       playerId: userId,
+      itemName,
       gameId: 1,
       timelineName,
       name: 'Stealing',
