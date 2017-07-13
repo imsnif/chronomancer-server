@@ -83,6 +83,20 @@ module.exports = {
       }
     }
   },
+  targetPlayerInTimeline (connection) {
+    const { getTimeline } = timeline(connection)
+    return async function checkIfUserExists (req, res, next) {
+      const targetPlayerId = Number(req.params.targetPlayerId)
+      const timelineName = req.params.timelineName
+      const timeline = await getTimeline(timelineName)
+      if (timeline.players.includes(targetPlayerId)) {
+        next()
+      } else {
+        res.statusCode = 403
+        next('Target player not in timeline')
+      }
+    }
+  },
   userHasNoPowerInTimeline (connection) {
     const { getPower } = power(connection)
     return async function checkIfUserIsNotBusy (req, res, next) {
@@ -137,9 +151,23 @@ module.exports = {
       }
     }
   },
+  targetPlayerHasItem (connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserHasItem (req, res, next) {
+      const { itemName, targetPlayerId } = req.params
+      const player = await getPlayer(Number(targetPlayerId), connection)
+      const hasItem = player.items.map(i => i.name).includes(itemName)
+      if (!hasItem) {
+        res.statusCode = 403
+        next(`Target player does not have the ${itemName} item`)
+      } else {
+        next()
+      }
+    }
+  },
   timelineIsUnlocked (connection) {
     const { getTimeline } = timeline(connection)
-    return async function checkIfUserExists (req, res, next) {
+    return async function checkIfTimelineIsUnlocked (req, res, next) {
       const timelineName = req.params.timelineName
       const timeline = await getTimeline(timelineName)
       if (timeline.isLocked) {
@@ -152,7 +180,7 @@ module.exports = {
   },
   timelineIsLocked (connection) {
     const { getTimeline } = timeline(connection)
-    return async function checkIfUserExists (req, res, next) {
+    return async function checkIfTimelineIsLocked (req, res, next) {
       const timelineName = req.params.timelineName
       const timeline = await getTimeline(timelineName)
       if (timeline.isLocked) {

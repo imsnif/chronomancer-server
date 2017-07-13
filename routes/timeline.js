@@ -13,7 +13,9 @@ const {
   userHasItem,
   timelineIsUnlocked,
   timelineIsLocked,
-  userHasNoPowerInTimeline
+  userHasNoPowerInTimeline,
+  targetPlayerInTimeline,
+  targetPlayerHasItem
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -128,6 +130,35 @@ module.exports = function timelineRoute (connection) {
         await createPower({
           playerId: userId,
           name: 'Resetting',
+          timelineName
+        })
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/steal/:itemName/:targetPlayerId/:timelineName',
+    timelineExists(connection),
+    userInTimeline(connection),
+    userHasNoPowerInTimeline(connection),
+    userHasItem('steal', connection),
+    targetPlayerInTimeline(connection),
+    targetPlayerHasItem(connection),
+    async (req, res, next) => {
+      try {
+        const timelineName = req.params.timelineName
+        const targetPlayerId = Number(req.params.targetPlayerId)
+        const userId = req.headers.userid
+        await createPower({
+          playerId: userId,
+          name: 'Stealing',
+          target: {
+            type: 'player',
+            id: targetPlayerId
+          },
           timelineName
         })
         await decrementPlayerActions(userId)
