@@ -8,7 +8,8 @@ module.exports = {
     {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], isLocked: false, gameId: 1},
     {name: 'Timeline 4', type: 'reset', isLocked: false, players: []},
     {name: 'Timeline 5', type: 'assist', players: [1, 2, 3, 5], isLocked: true, gameId: 1},
-    {name: 'Timeline 6', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1}
+    {name: 'Timeline 6', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1},
+    {name: 'Timeline 7', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1}
   ],
   players: [
     {
@@ -63,7 +64,8 @@ module.exports = {
         {name: 'assist', source: 'Timeline 2'},
         {name: 'lock', source: 'Timeline 2'},
         {name: 'unlock', source: 'Timeline 2'},
-        {name: 'reset', source: 'Timeline 2'}
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'}
       ],
       actions: 0
     }

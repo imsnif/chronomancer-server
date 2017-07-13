@@ -59,7 +59,8 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
         { name: 'assist', source: 'Timeline 2' },
         { name: 'lock', source: 'Timeline 2' },
         { name: 'unlock', source: 'Timeline 2' },
-        { name: 'reset', source: 'Timeline 2' }
+        { name: 'reset', source: 'Timeline 2' },
+        { name: 'steal', source: 'Timeline 2' }
       ],
       'item not added to player'
     )
