@@ -336,3 +336,26 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user busy 
     t.fail(e.message)
   }
 })
+
+test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => cannot steal item from self', async t => {
+  t.plan(2)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 1'
+    const itemName = 'lock'
+    const targetPlayerId = 3
+    const userId = 3
+    await request(app)
+      .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
+      .set('userId', userId)
+      .expect(403)
+    const power = await getPower(userId, timelineName, conn)
+    const actions = await getPlayerActions(userId, conn)
+    t.equals(actions, 10, 'actions not decremented')
+    t.notOk(power, 'power not created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})

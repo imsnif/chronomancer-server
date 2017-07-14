@@ -15,7 +15,8 @@ const {
   timelineIsLocked,
   userHasNoPowerInTimeline,
   targetPlayerInTimeline,
-  targetPlayerHasItem
+  targetPlayerHasItem,
+  targetPlayerIsNotUser
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -143,6 +144,7 @@ module.exports = function timelineRoute (connection) {
     '/steal/:itemName/:targetPlayerId/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    targetPlayerIsNotUser(connection),
     userHasNoPowerInTimeline(connection),
     userHasItem('steal', connection),
     targetPlayerInTimeline(connection),

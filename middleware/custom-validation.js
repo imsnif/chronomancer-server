@@ -190,5 +190,17 @@ module.exports = {
         next('Timeline is unlocked')
       }
     }
+  },
+  targetPlayerIsNotUser (connection) {
+    return async function checkIfUserExists (req, res, next) {
+      const targetPlayerId = Number(req.params.targetPlayerId)
+      const userId = Number(req.headers.userid)
+      if (targetPlayerId === userId) {
+        res.statusCode = 403
+        next('Cannot use this power on self')
+      } else {
+        next()
+      }
+    }
   }
 }
