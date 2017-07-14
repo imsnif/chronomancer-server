@@ -151,6 +151,36 @@ module.exports = {
       }
     }
   },
+  userHasItemsInArgs (connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserHasItems (req, res, next) {
+      const userId = req.headers.userid
+      const { item1, item2 } = req.params
+      const player = await getPlayer(userId, connection)
+      const itemNames = player.items.map(i => i.name)
+      if (itemNames.includes(item1) && itemNames.includes(item2)) {
+        next()
+      } else {
+        res.statusCode = 403
+        next(`User does not have the ${item1} and the ${item2} items`)
+      }
+    }
+  },
+  properItemsInArgs () {
+    return async function checkIfUserHasItems (req, res, next) {
+      const { item1, item2 } = req.params
+      if (
+        (item1 === 'assist' && item2 === 'prevent') ||
+        (item1 === 'steal' && item2 === 'reset') ||
+        (item1 === 'lock' && item2 === 'unlock')
+      ) {
+        next()
+      } else {
+        res.statusCode = 403
+        next(`Cannot combine ${item1} and ${item2}`)
+      }
+    }
+  },
   targetPlayerHasItem (connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItem (req, res, next) {

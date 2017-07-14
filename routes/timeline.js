@@ -16,7 +16,9 @@ const {
   userHasNoPowerInTimeline,
   targetPlayerInTimeline,
   targetPlayerHasItem,
-  targetPlayerIsNotUser
+  targetPlayerIsNotUser,
+  userHasItemsInArgs,
+  properItemsInArgs
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -162,6 +164,37 @@ module.exports = function timelineRoute (connection) {
             id: targetPlayerId
           },
           itemName,
+          timelineName
+        })
+        await decrementPlayerActions(userId)
+        res.sendStatus(200)
+      } catch (e) {
+        next(e)
+      }
+    }
+  )
+  route.post(
+    '/combine/:item1/:item2/:timelineName',
+    timelineExists(connection),
+    userInTimeline(connection),
+    userHasItemsInArgs(connection),
+    properItemsInArgs(),
+    userHasNoPowerInTimeline(connection),
+    async (req, res, next) => {
+      try {
+        const { timelineName, item1, item2 } = req.params
+        const userId = req.headers.userid
+        const targetItem = item1 === 'assist' && item2 === 'prevent' ? 'lock'
+          : item1 === 'steal' && item2 === 'reset' ? 'unlock'
+          : item1 === 'lock' && item2 === 'unlock' ? 'win' : 'N/A'
+        await createPower({
+          playerId: userId,
+          name: targetItem === 'win' ? 'Winning' : 'Combining',
+          target: {
+            type: 'timeline',
+            name: timelineName,
+            itemName: targetItem
+          },
           timelineName
         })
         await decrementPlayerActions(userId)
