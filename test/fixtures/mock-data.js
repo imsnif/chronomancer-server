@@ -8,8 +8,9 @@ module.exports = {
     {name: 'Timeline 3', type: 'prevent', players: [2, 3, 4], isLocked: false, gameId: 1},
     {name: 'Timeline 4', type: 'reset', isLocked: false, players: []},
     {name: 'Timeline 5', type: 'assist', players: [1, 2, 3, 5], isLocked: true, gameId: 1},
-    {name: 'Timeline 6', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1},
-    {name: 'Timeline 7', type: 'assist', players: [1, 2, 3, 5], isLocked: false, gameId: 1}
+    {name: 'Timeline 6', type: 'prevent', players: [1, 2, 3, 5], isLocked: false, gameId: 1},
+    {name: 'Timeline 7', type: 'reset', players: [1, 2, 3, 5], isLocked: false, gameId: 1},
+    {name: 'Timeline 8', type: 'steal', players: [6, 7, 8, 9], isLocked: false, gameId: 1}
   ],
   players: [
     {
@@ -68,6 +69,55 @@ module.exports = {
         {name: 'steal', source: 'Timeline 2'}
       ],
       actions: 0
+    },
+    {
+      id: 6,
+      gameId: 1,
+      name: 'Two-Items Ted',
+      items: [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'}
+      ],
+      actions: 10
+    },
+    {
+      id: 7,
+      gameId: 1,
+      name: 'Four-Items Daria',
+      items: [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'}
+      ],
+      actions: 10
+    },
+    {
+      id: 8,
+      gameId: 1,
+      name: 'Five-Items Fatma',
+      items: [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'},
+        {name: 'lock', source: 'Timeline 2'}
+      ],
+      actions: 10
+    },
+    {
+      id: 9,
+      gameId: 1,
+      name: 'Six-Items Achmed',
+      items: [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'},
+        {name: 'lock', source: 'Timeline 2'},
+        {name: 'unlock', source: 'Timeline 2'}
+      ],
+      actions: 10
     }
   ],
   powers: [
