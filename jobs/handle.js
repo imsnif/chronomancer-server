@@ -8,7 +8,11 @@ module.exports = function (connection) {
     removeOtherPlayersFromTimeline,
     removePlayersItemsFromTimeline
   } = require('../service/timeline')(connection)
-  const { getPlayer } = require('../service/player')(connection)
+  const {
+    getPlayer,
+    appendItemToPlayer,
+    removeItemFromPlayer
+  } = require('../service/player')(connection)
   return {
     locking: async power => {
       if (!power || !power.timelineName) return Promise.resolve()
@@ -36,6 +40,24 @@ module.exports = function (connection) {
         const affectedPlayers = timeline.players.filter(pId => pId !== player.id)
         await removePlayersItemsFromTimeline(power.timelineName, affectedPlayers)
         await removeOtherPlayersFromTimeline(power.timelineName, player.id)
+        return Promise.resolve()
+      } else {
+        return Promise.resolve()
+      }
+    },
+    stealing: async power => {
+      if (!power || !power.timelineName) return Promise.resolve()
+      const player = await getPlayer(power.playerId)
+      const targetPlayer = await getPlayer(power.target.name)
+      const itemName = power.itemName
+      const timeline = await getTimeline(power.timelineName)
+      if (
+        player.items.map(i => i.name).includes('steal') &&
+        targetPlayer.items.map(i => i.name).includes(itemName) &&
+        timeline.players.includes(power.target.name)
+      ) {
+        await removeItemFromPlayer(itemName, power.target.name)
+        await appendItemToPlayer(power.playerId, {name: itemName, source: false})
         return Promise.resolve()
       } else {
         return Promise.resolve()

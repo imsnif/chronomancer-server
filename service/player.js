@@ -44,6 +44,28 @@ module.exports = function playerService (connection) {
           })
         })
       })
+    },
+    async removeItemFromPlayer (itemName, targetPlayerId) {
+      // TODO: do this with one query
+      const targetPlayerItems = await new Promise((resolve, reject) => {
+        r.table('players').filter({id: targetPlayerId})('items').run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          cursor.toArray((err, results) => {
+            if (err) return reject(err)
+            resolve(results[0])
+          })
+        })
+      })
+      const itemIndex = targetPlayerItems.map(i => i.name).indexOf(itemName)
+      await new Promise((resolve, reject) => {
+        r.table('players').filter({id: targetPlayerId}).update({
+          items: r.row('items').deleteAt(itemIndex)
+        }).run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          return resolve()
+        })
+      })
+      return Promise.resolve()
     }
   }
 }
