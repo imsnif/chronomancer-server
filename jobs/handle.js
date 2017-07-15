@@ -62,6 +62,29 @@ module.exports = function (connection) {
       } else {
         return Promise.resolve()
       }
+    },
+    combining: async power => {
+      if (!power || !power.timelineName) return Promise.resolve()
+      const player = await getPlayer(power.playerId)
+      const targetItem = power.target.itemName
+      const timeline = await getTimeline(power.timelineName)
+      const requiredItems = targetItem === 'lock'
+        ? ['assist', 'prevent']
+        : ['reset', 'steal']
+      if (
+        requiredItems.every(
+          requiredItem => player.items.map(i => i.name).includes(requiredItem)
+        ) &&
+        timeline.players.includes(player.id)
+      ) {
+        await appendItemToPlayer(
+          power.playerId,
+          {name: targetItem, source: power.timelineName}
+        )
+        return Promise.resolve()
+      } else {
+        return Promise.resolve()
+      }
     }
   }
 }
