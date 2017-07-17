@@ -11,7 +11,8 @@ module.exports = function (connection) {
   const {
     getPlayer,
     appendItemToPlayer,
-    removeItemFromPlayer
+    removeItemFromPlayer,
+    declareWinner
   } = require('../service/player')(connection)
   return {
     locking: async power => {
@@ -81,6 +82,23 @@ module.exports = function (connection) {
           power.playerId,
           {name: targetItem, source: power.timelineName}
         )
+        return Promise.resolve()
+      } else {
+        return Promise.resolve()
+      }
+    },
+    winning: async power => {
+      if (!power || !power.timelineName) return Promise.resolve()
+      const player = await getPlayer(power.playerId)
+      const timeline = await getTimeline(power.timelineName)
+      const requiredItems = ['lock', 'unlock']
+      if (
+        requiredItems.every(
+          requiredItem => player.items.map(i => i.name).includes(requiredItem)
+        ) &&
+        timeline.players.includes(player.id)
+      ) {
+        await declareWinner(power.playerId, power.gameId)
         return Promise.resolve()
       } else {
         return Promise.resolve()

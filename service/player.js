@@ -66,6 +66,17 @@ module.exports = function playerService (connection) {
         })
       })
       return Promise.resolve()
+    },
+    async declareWinner (playerId, gameId) {
+      await new Promise((resolve, reject) => {
+        r.table('games').filter({id: gameId}).update({
+          winnerId: playerId
+        }).run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          return resolve()
+        })
+      })
+      return Promise.resolve()
     }
   }
 }
