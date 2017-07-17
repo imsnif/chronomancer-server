@@ -113,5 +113,13 @@ module.exports = {
         resolve()
       })
     })
+  },
+  getGame (id, connection) {
+    return new Promise((resolve, reject) => {
+      r.table('games').get(id).run(connection, (err, game) => {
+        if (err) return reject(err)
+        resolve(game)
+      })
+    })
   }
 }

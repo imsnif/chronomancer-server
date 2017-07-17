@@ -57,7 +57,7 @@ function createTable (name, connection) {
 }
 
 module.exports = async function fixtures () {
-  const tables = [ 'players', 'powers', 'timelines' ]
+  const tables = [ 'players', 'powers', 'timelines', 'games' ]
   const connection = await getConnection()
   await dropDatabase('chronomancer', connection)
   await createDatabase('chronomancer', connection)

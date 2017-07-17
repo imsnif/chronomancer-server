@@ -163,5 +163,8 @@ module.exports = {
       allies: [],
       enemies: []
     }
+  ],
+  games: [
+    {id: 1}
   ]
 }
