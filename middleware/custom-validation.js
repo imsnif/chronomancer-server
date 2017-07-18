@@ -137,6 +137,30 @@ module.exports = {
       next()
     }
   },
+  async validateAndSanitizeUserName (req, res, next) {
+    req.sanitizeHeaders('name').toString()
+    req.checkHeaders('name').notEmpty()
+    const result = await req.getValidationResult()
+    result.useFirstErrorOnly()
+    if (!result.isEmpty()) {
+      res.statusCode = 400
+      next(result.array()[0])
+    } else {
+      next()
+    }
+  },
+  async validateAndSanitizeUserPic (req, res, next) {
+    req.sanitizeHeaders('userpic').toString()
+    req.checkHeaders('userpic').notEmpty()
+    const result = await req.getValidationResult()
+    result.useFirstErrorOnly()
+    if (!result.isEmpty()) {
+      res.statusCode = 400
+      next(result.array()[0])
+    } else {
+      next()
+    }
+  },
   userHasItem (itemName, connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItem (req, res, next) {
