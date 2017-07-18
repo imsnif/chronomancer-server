@@ -18,8 +18,10 @@ module.exports = function (connection) {
   connection.use('chronomancer')
   const timeline = require('./routes/timeline')(connection)
   const bidding = require('./routes/bidding')(connection)
+  const player = require('./routes/player')(connection)
   app.use('/timeline', timeline)
   app.use('/bidding', bidding)
+  app.use('/player', player)
   app.use(express.static(path.join(__dirname, 'public')))
   return app
 }

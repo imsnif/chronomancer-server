@@ -77,6 +77,17 @@ module.exports = function playerService (connection) {
         })
       })
       return Promise.resolve()
+    },
+    async createOrUpdatePlayer (id, picture, name) {
+      console.log('createOrUpdatePlayer:', id, picture, name)
+      await new Promise((resolve, reject) => {
+        r.table('players').insert({id, picture, name}, {conflict: 'update'})
+        .run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          return resolve()
+        })
+      })
+      return Promise.resolve()
     }
   }
 }

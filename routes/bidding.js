@@ -28,7 +28,7 @@ module.exports = function biddingRoute (connection) {
     async (req, res, next) => {
       try {
         const { timelineName } = req.params
-        const targetPlayerId = Number(req.params.targetPlayerId)
+        const targetPlayerId = req.params.targetPlayerId
         const userId = req.headers.userid
         await addAlly(userId, timelineName, targetPlayerId)
         await decrementPlayerActions(userId)
@@ -48,7 +48,7 @@ module.exports = function biddingRoute (connection) {
     async (req, res, next) => {
       try {
         const { timelineName } = req.params
-        const targetPlayerId = Number(req.params.targetPlayerId)
+        const targetPlayerId = req.params.targetPlayerId
         const userId = req.headers.userid
         await addEnemy(userId, timelineName, targetPlayerId)
         await decrementPlayerActions(userId)

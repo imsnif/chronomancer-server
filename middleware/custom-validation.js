@@ -47,7 +47,7 @@ module.exports = {
     const { getPower } = power(connection)
     return async function checkIfUserExists (req, res, next) {
       const { targetPlayerId, timelineName } = req.params
-      const power = await getPower(Number(targetPlayerId), timelineName)
+      const power = await getPower(targetPlayerId, timelineName)
       if (!power) {
         res.statusCode = 403
         next('No such power')
@@ -59,7 +59,7 @@ module.exports = {
   targetPlayerExists (connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserExists (req, res, next) {
-      const targetPlayerId = Number(req.params.targetPlayerId)
+      const targetPlayerId = req.params.targetPlayerId
       const player = await getPlayer(targetPlayerId, connection)
       if (!player) {
         res.statusCode = 403
@@ -86,7 +86,7 @@ module.exports = {
   targetPlayerInTimeline (connection) {
     const { getTimeline } = timeline(connection)
     return async function checkIfUserExists (req, res, next) {
-      const targetPlayerId = Number(req.params.targetPlayerId)
+      const targetPlayerId = req.params.targetPlayerId
       const timelineName = req.params.timelineName
       const timeline = await getTimeline(timelineName)
       if (timeline.players.includes(targetPlayerId)) {
@@ -126,8 +126,8 @@ module.exports = {
     }
   },
   async validateAndSanitizeUserId (req, res, next) {
-    req.sanitizeHeaders('userId').toInt()
-    req.checkHeaders('userId').notEmpty().isInt()
+    req.sanitizeHeaders('userId').toString()
+    req.checkHeaders('userId').notEmpty()
     const result = await req.getValidationResult()
     result.useFirstErrorOnly()
     if (!result.isEmpty()) {
@@ -185,7 +185,7 @@ module.exports = {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItem (req, res, next) {
       const { itemName, targetPlayerId } = req.params
-      const player = await getPlayer(Number(targetPlayerId), connection)
+      const player = await getPlayer(targetPlayerId, connection)
       const hasItem = player.items.map(i => i.name).includes(itemName)
       if (!hasItem) {
         res.statusCode = 403
@@ -223,8 +223,8 @@ module.exports = {
   },
   targetPlayerIsNotUser (connection) {
     return async function checkIfUserExists (req, res, next) {
-      const targetPlayerId = Number(req.params.targetPlayerId)
-      const userId = Number(req.headers.userid)
+      const targetPlayerId = req.params.targetPlayerId
+      const userId = req.headers.userid
       if (targetPlayerId === userId) {
         res.statusCode = 403
         next('Cannot use this power on self')

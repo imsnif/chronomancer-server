@@ -67,7 +67,7 @@ module.exports = function (connection) {
       })
     },
     addAlly (allyId, timelineName, playerId) {
-      const aId = Number(allyId)
+      const aId = allyId
       return new Promise((resolve, reject) => {
         r.table('powers')
         .filter({gameId: 1, timelineName, playerId})
@@ -90,7 +90,7 @@ module.exports = function (connection) {
       })
     },
     addEnemy (enemyId, timelineName, playerId) {
-      const eId = Number(enemyId)
+      const eId = enemyId
       return new Promise((resolve, reject) => {
         r.table('powers')
         .filter({gameId: 1, timelineName, playerId})

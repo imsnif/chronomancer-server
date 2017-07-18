@@ -154,7 +154,7 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const { timelineName, itemName } = req.params
-        const targetPlayerId = Number(req.params.targetPlayerId)
+        const targetPlayerId = req.params.targetPlayerId
         const userId = req.headers.userid
         await createPower({
           playerId: userId,
