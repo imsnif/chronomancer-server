@@ -15,8 +15,8 @@ test('Steal power resolution => success', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
-    const targetPlayerId = 4
+    const playerId = '3'
+    const targetPlayerId = '4'
     const itemName = 'lock'
     const now = new Date()
     await createPower({
@@ -53,8 +53,8 @@ test('Steal power resolution => failure (negative score)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
-    const targetPlayerId = 4
+    const playerId = '3'
+    const targetPlayerId = '4'
     const itemName = 'lock'
     const now = new Date()
     await createPower({
@@ -91,8 +91,8 @@ test('Steal power resolution => failure (item no longer exists)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 1
-    const targetPlayerId = 4
+    const playerId = '1'
+    const targetPlayerId = '4'
     const itemName = 'lock'
     const now = new Date()
     await createPower({
@@ -129,8 +129,8 @@ test('Steal power resolution => failure (target item no longer exists)', async t
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
-    const targetPlayerId = 1
+    const playerId = '3'
+    const targetPlayerId = '1'
     const itemName = 'lock'
     const now = new Date()
     await createPower({
@@ -165,8 +165,8 @@ test('Steal power resolution => failure (player no longer in timeline)', async t
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 5
-    const targetPlayerId = 3
+    const playerId = '5'
+    const targetPlayerId = '3'
     const itemName = 'lock'
     const now = new Date()
     await createPower({
@@ -203,8 +203,8 @@ test('Steal power resolution => failure (target player no longer in timeline)', 
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
-    const targetPlayerId = 5
+    const playerId = '3'
+    const targetPlayerId = '5'
     const itemName = 'lock'
     const now = new Date()
     await createPower({

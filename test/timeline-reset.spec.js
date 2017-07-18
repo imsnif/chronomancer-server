@@ -17,7 +17,7 @@ test('POST /timeline/reset/:timelineName => resets timeline with existing player
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
@@ -52,7 +52,7 @@ test('POST /timeline/reset/:timelineName => with no actions left', async t => {
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = 5
+    const userId = '5'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
@@ -73,7 +73,7 @@ test('POST /timeline/reset/:timelineName => with no reset item', async t => {
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
       .set('userId', userId)
@@ -108,7 +108,7 @@ test('POST /timeline/reset/:timelineName => bad parameters - no timelineName', a
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post('/timeline/reset')
       .set('userId', userId)
@@ -125,7 +125,7 @@ test('POST /timeline/reset/:timelineName => bad parameters - non-existent user',
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 99999
+    const userId = '99999'
     await request(app)
       .post('/timeline/reset/Timeline 1')
       .set('userId', userId)
@@ -142,7 +142,7 @@ test('POST /timeline/reset/:timelineName => bad parameters - non-existent timeli
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post('/timeline/reset/foo')
       .set('userId', userId)
@@ -159,7 +159,7 @@ test('POST /timeline/reset/:timelineName => user not in timeline', async t => {
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     const timelineName = 'Timeline 4'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
@@ -181,7 +181,7 @@ test('POST /timeline/reset/:timelineName => user busy (has power) in timeline', 
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = 3
+    const userId = '3'
     const now = new Date()
     await createPower({
       playerId: userId,

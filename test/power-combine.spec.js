@@ -15,7 +15,7 @@ test('Combine power resolution => success (assist, prevent)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 8'
-    const playerId = 6
+    const playerId = '6'
     const now = new Date()
     await createPower({
       playerId,
@@ -53,7 +53,7 @@ test('Combine power resolution => success (reset, steal)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 8'
-    const playerId = 7
+    const playerId = '7'
     const now = new Date()
     await createPower({
       playerId,
@@ -93,7 +93,7 @@ test('Combine power resolution => failure (negative score)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 8'
-    const playerId = 6
+    const playerId = '6'
     const now = new Date()
     await createPower({
       playerId,
@@ -130,7 +130,7 @@ test('Combine power resolution => failure (items no longer exists) (assist, prev
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 1
+    const playerId = '1'
     const now = new Date()
     await createPower({
       playerId,
@@ -164,7 +164,7 @@ test('Combine power resolution => failure (one item no longer exists) (reset, st
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 8'
-    const playerId = 6
+    const playerId = '6'
     const now = new Date()
     await createPower({
       playerId,
@@ -201,7 +201,7 @@ test('Combine power resolution => failure (player no longer in timeline)', async
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 6
+    const playerId = '6'
     const now = new Date()
     await createPower({
       playerId,

@@ -17,7 +17,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName (assist, prevent) => cr
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 6
+    const userId = '6'
     const item1 = 'assist'
     const item2 = 'prevent'
     await request(app)
@@ -55,7 +55,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName (reset, steal) => creat
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 7
+    const userId = '7'
     const item1 = 'steal'
     const item2 = 'reset'
     await request(app)
@@ -93,7 +93,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName (lock, unlock) => creat
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 9
+    const userId = '9'
     const item1 = 'lock'
     const item2 = 'unlock'
     await request(app)
@@ -131,7 +131,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName => with no actions left
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = 5
+    const userId = '5'
     const item1 = 'lock'
     const item2 = 'unlock'
     await request(app)
@@ -154,7 +154,7 @@ test('POST /timeline/combin/:item1/:item2/:timelineName => with wrong combinatio
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 9
+    const userId = '9'
     const badCombinations = [
       ['assist', 'lock'],
       ['lock', 'assist'],
@@ -205,7 +205,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName => bad parameters - no 
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post(`/timeline/combine/assist/prevent`)
       .set('userId', userId)
@@ -223,7 +223,7 @@ test('POST /timeline/combine/:item1/:item2/:timelineName => bad parameters - non
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 99999
+    const userId = '99999'
     await request(app)
       .post(`/timeline/combine/assist/prevent/${timelineName}`)
       .set('userId', userId)
@@ -240,7 +240,7 @@ test('POST /timeline/lock/:timelineName => bad parameters - non-existent timelin
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 99999
+    const userId = '99999'
     await request(app)
       .post(`/timeline/combine/assist/prevent/foo`)
       .set('userId', userId)
@@ -257,7 +257,7 @@ test('POST /timeline/lock/:timelineName => user not in timeline', async t => {
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 9
+    const userId = '9'
     const timelineName = 'Timeline 1'
     const item1 = 'assist'
     const item2 = 'prevent'
@@ -281,7 +281,7 @@ test('POST /timeline/lock/:timelineName => user busy (has power) in timeline', a
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 9
+    const userId = '9'
     const item1 = 'assist'
     const item2 = 'prevent'
     const now = new Date()
@@ -319,7 +319,7 @@ test('POST /timeline/lock/:timelineName => user does not have the right items (a
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = 1
+    const userId = '1'
     const item1 = 'assist'
     const item2 = 'prevent'
     await request(app)
@@ -342,7 +342,7 @@ test('POST /timeline/lock/:timelineName => user does not have the right items (r
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 6
+    const userId = '6'
     const item1 = 'reset'
     const item2 = 'steal'
     await request(app)
@@ -365,7 +365,7 @@ test('POST /timeline/lock/:timelineName => user does not have the right items (l
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 8'
-    const userId = 8
+    const userId = '8'
     const item1 = 'lock'
     const item2 = 'unlock'
     await request(app)

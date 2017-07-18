@@ -23,7 +23,7 @@ test('Multiple relevant jobs are resolved and deleted', async t => {
     }
     const jobs = getMockedJobs(handle)(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     const powersBefore = await getAllPowers(conn)
     const power = {
@@ -73,7 +73,7 @@ test('Unfinished jobs are not resolved or deleted', async t => {
     }
     const jobs = getMockedJobs(handle)(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     const powersBefore = await getAllPowers(conn)
     const power = {
@@ -110,7 +110,7 @@ test('Corrupted jobs are ignored and do not affect other jobs', async t => {
     }
     const jobs = getMockedJobs(handle)(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     const powersBefore = await getAllPowers(conn)
     const power = {
@@ -157,7 +157,7 @@ test('Negative score jobs are deleted and not resolved', async t => {
     }
     const jobs = getMockedJobs(handle)(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     const powersBefore = await getAllPowers(conn)
     const power = {

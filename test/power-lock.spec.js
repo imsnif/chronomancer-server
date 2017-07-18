@@ -11,7 +11,7 @@ test('Lock power resolution => success', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     await createPower({
       playerId,
@@ -44,7 +44,7 @@ test('Lock power resolution => failure (negative score)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     await createPower({
       playerId,
@@ -77,7 +77,7 @@ test('Lock power resolution => failure (item no longer exists)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 1
+    const playerId = '1'
     const now = new Date()
     await createPower({
       playerId,
@@ -110,7 +110,7 @@ test('Lock power resolution => failure (player no longer in timeline)', async t 
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 4'
-    const playerId = 3
+    const playerId = '3'
     const now = new Date()
     await createPower({
       playerId,

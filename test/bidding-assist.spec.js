@@ -11,15 +11,15 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => adds player to allie
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 1
-    const userId = 3
+    const targetPlayerId = '1'
+    const userId = '3'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
       .expect(200)
     const power = await getPower(targetPlayerId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
-    t.deepEquals(power.allies, [{id: 3, score: 1}], 'player added to allies')
+    t.deepEquals(power.allies, [{id: '3', score: 1}], 'player added to allies')
     t.equals(actions, 9, 'actions decremented by 1')
   } catch (e) {
     console.error(e.stack)
@@ -33,15 +33,15 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => adds score to existi
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 2
-    const userId = 3
+    const targetPlayerId = '2'
+    const userId = '3'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
       .expect(200)
     const power = await getPower(targetPlayerId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
-    t.deepEquals(power.allies, [{id: 3, score: 2}], 'player added to allies')
+    t.deepEquals(power.allies, [{id: '3', score: 2}], 'player added to allies')
     t.equals(actions, 9, 'actions decremented by 1')
   } catch (e) {
     console.error(e.stack)
@@ -55,8 +55,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => with no actions left
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 1
-    const userId = 5
+    const targetPlayerId = '1'
+    const userId = '5'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -77,8 +77,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => with no assist item'
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 3
-    const userId = 1
+    const targetPlayerId = '3'
+    const userId = '1'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -99,7 +99,7 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - no 
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 1
+    const targetPlayerId = '1'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .expect(400)
@@ -115,7 +115,7 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - no 
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post('/bidding/assist')
       .set('userId', userId)
@@ -132,7 +132,7 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - no 
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     const timelineName = 'Timeline 6'
     await request(app)
       .post(`/bidding/assist/${timelineName}`)
@@ -150,9 +150,9 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - non
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 99999
+    const userId = '99999'
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 1
+    const targetPlayerId = '1'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -169,9 +169,9 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - non
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 3
+    const userId = '3'
     const timelineName = 'foo'
-    const targetPlayerId = 1
+    const targetPlayerId = '1'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -189,8 +189,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - non
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 42
-    const userId = 3
+    const targetPlayerId = '42'
+    const userId = '3'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -208,8 +208,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => user not in timeline
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 1
-    const userId = 4
+    const targetPlayerId = '1'
+    const userId = '4'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -230,8 +230,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => no active power on t
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 5
-    const userId = 3
+    const targetPlayerId = '5'
+    const userId = '3'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -250,8 +250,8 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => targetPlayer not in 
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
-    const targetPlayerId = 4
-    const userId = 3
+    const targetPlayerId = '4'
+    const userId = '3'
     await request(app)
       .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
       .set('userId', userId)

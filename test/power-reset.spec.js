@@ -16,7 +16,7 @@ test('Reset power resolution => success', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const origTimeline = await getTimeline(timelineName, conn)
     const now = new Date()
     await createPower({
@@ -42,7 +42,7 @@ test('Reset power resolution => success', async t => {
     )
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
-    t.deepEquals(timeline.players, [3], 'all other players removed from timeline')
+    t.deepEquals(timeline.players, ['3'], 'all other players removed from timeline')
     t.notOk(power, 'power was deleted')
     t.ok(
       playerItems.reduce((memo, items) => memo.concat(items)).every(i => i.source !== timelineName),
@@ -61,7 +61,7 @@ test('Reset power resolution => failure (negative score)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 3
+    const playerId = '3'
     const origTimeline = await getTimeline(timelineName, conn)
     const origPlayerItems = await Promise.all(
       origTimeline.players.map(pId => getPlayerItems(pId, conn))
@@ -102,7 +102,7 @@ test('Reset power resolution => failure (item no longer exists)', async t => {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 1'
-    const playerId = 1
+    const playerId = '1'
     const origTimeline = await getTimeline(timelineName, conn)
     const origPlayerItems = await Promise.all(
       origTimeline.players.map(pId => getPlayerItems(pId, conn))
@@ -143,7 +143,7 @@ test('Reset power resolution => failure (player no longer in timeline)', async t
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
     const timelineName = 'Timeline 2'
-    const playerId = 4
+    const playerId = '4'
     const origTimeline = await getTimeline(timelineName, conn)
     const origPlayerItems = await Promise.all(
       origTimeline.players.map(pId => getPlayerItems(pId, conn))

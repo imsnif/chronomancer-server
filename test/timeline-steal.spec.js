@@ -17,8 +17,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates re
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 4
-    const userId = 3
+    const targetPlayerId = '4'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -55,8 +55,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no ac
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 4
-    const userId = 5
+    const targetPlayerId = '4'
+    const userId = '5'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -78,8 +78,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no st
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const userId = 1
-    const targetPlayerId = 4
+    const userId = '1'
+    const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -102,7 +102,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 4
+    const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .expect(400)
@@ -119,7 +119,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal`)
       .set('userId', userId)
@@ -141,7 +141,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'steal'
-    const userId = 3
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}`)
       .set('userId', userId)
@@ -163,8 +163,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'steal'
-    const userId = 3
-    const targetPlayerId = 4
+    const userId = '3'
+    const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}`)
       .set('userId', userId)
@@ -184,10 +184,10 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 99999
+    const userId = '99999'
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 4
+    const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -206,8 +206,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 99999
-    const userId = 3
+    const targetPlayerId = '99999'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -229,8 +229,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const app = require('../app')(conn)
     const timelineName = 'foo'
     const itemName = 'lock'
-    const targetPlayerId = 4
-    const userId = 3
+    const targetPlayerId = '4'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -252,8 +252,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlay
     const app = require('../app')(conn)
     const timelineName = 'Timeline 7'
     const itemName = 'lock'
-    const targetPlayerId = 4
-    const userId = 3
+    const targetPlayerId = '4'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -275,8 +275,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlay
     const app = require('../app')(conn)
     const timelineName = 'Timeline 7'
     const itemName = 'lock'
-    const targetPlayerId = 1
-    const userId = 3
+    const targetPlayerId = '1'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -298,8 +298,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user not i
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
     const itemName = 'lock'
-    const targetPlayerId = 3
-    const userId = 4
+    const targetPlayerId = '3'
+    const userId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -321,8 +321,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user busy 
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
     const itemName = 'lock'
-    const targetPlayerId = 4
-    const userId = 3
+    const targetPlayerId = '4'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)
@@ -344,8 +344,8 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => cannot ste
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const targetPlayerId = 3
-    const userId = 3
+    const targetPlayerId = '3'
+    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
       .set('userId', userId)

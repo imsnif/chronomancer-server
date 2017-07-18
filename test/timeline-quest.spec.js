@@ -10,7 +10,7 @@ test('POST /timeline/quest/:timelineName => adds relevant item to player', async
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 1')
       .set('userId', userId)
@@ -28,7 +28,7 @@ test('POST /timeline/quest/:timelineName => costs 1 action', async t => {
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 1')
       .set('userId', userId)
@@ -46,7 +46,7 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 5
+    const userId = '5'
     await request(app)
       .post('/timeline/quest/Timeline 1')
       .set('userId', userId)
@@ -76,7 +76,7 @@ test('POST /timeline/quest/:timelineName => appends to existing item list', asyn
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 2
+    const userId = '2'
     await request(app)
       .post('/timeline/quest/Timeline 1')
       .set('userId', userId)
@@ -112,7 +112,7 @@ test('POST /timeline/quest/:timelineName => bad parameters - no timelineName', a
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post('/timeline/quest')
       .set('userId', userId)
@@ -129,7 +129,7 @@ test('POST /timeline/quest/:timelineName => bad parameters - non-existent user',
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 99999
+    const userId = '99999'
     await request(app)
       .post('/timeline/quest/Timeline 1')
       .set('userId', userId)
@@ -146,7 +146,7 @@ test('POST /timeline/quest/:timelineName => bad parameters - non-existent timeli
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post('/timeline/quest/foo')
       .set('userId', userId)
@@ -163,7 +163,7 @@ test('POST /timeline/quest/:timelineName => user not in timeline', async t => {
   try {
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = 1
+    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 4')
       .set('userId', userId)
