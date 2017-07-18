@@ -5,16 +5,17 @@ const WebSocket = require('ws')
 const { tables } = require('../config')
 
 module.exports = function (connection, wss) {
-  let changeFeeds = []
+  let cursors = []
+  let players = []
   tables.forEach(tableName => {
     r.table(tableName).changes().run(connection, (err, cursor) => {
       if (err) return // TODO: log
-      changeFeeds.push(cursor)
+      cursors.push(cursor)
       cursor.each((err, row) => {
         if (err) return // TODO: log
-        wss.clients.forEach(ws => {
+        players.forEach(({gameId, ws}) => {
           try {
-            if (ws.readyState === WebSocket.OPEN) {
+            if (ws.readyState === WebSocket.OPEN && row.new_val.gameId === gameId) {
               const data = JSON.stringify({[tableName]: row.new_val})
               ws.send(data)
             }
@@ -25,5 +26,10 @@ module.exports = function (connection, wss) {
       })
     })
   })
-  return changeFeeds
+  return {
+    cursors,
+    subscribePlayer: (playerId, gameId, ws) => {
+      players.push({playerId, gameId, ws}) // TODO: remove first
+    }
+  }
 }
