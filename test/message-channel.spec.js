@@ -35,6 +35,9 @@ test('Initial data is sent on connection', async t => {
     const { client } = await mockServer(conn)
     const mockData = require('./fixtures/mock-data')
     const timeout = failureTimeout(t)
+    client.on('open', () => {
+      client.send(1)
+    })
     client.on('message', (e) => {
       try {
         clearTimeout(timeout)
@@ -74,8 +77,11 @@ test('Players changes propagated through message channel', async t => {
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
-    const mockData = {foo: 1}
+    const mockData = {foo: 1, gameId: 1}
     verifyMessageData(mockData, client, 'players', timeout, t)
+    client.on('open', () => {
+      client.send(1)
+    })
     await new Promise(resolve => setTimeout(resolve, 200)) // allow bootstrapping time
     await insertFakeData('players', mockData, conn)
     t.pass() // somewhat of an ugly hack to avoid a race condition
@@ -92,7 +98,10 @@ test('Timelines changes propagated through message channel', async t => {
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
-    const mockData = {foo: 1}
+    const mockData = {foo: 1, gameId: 1}
+    client.on('open', () => {
+      client.send(1)
+    })
     verifyMessageData(mockData, client, 'timelines', timeout, t)
     await new Promise(resolve => setTimeout(resolve, 200)) // allow bootstrapping time
     await insertFakeData('timelines', mockData, conn)
@@ -110,7 +119,10 @@ test('Powers changes propagated through message channel', async t => {
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
-    const mockData = {foo: 1}
+    const mockData = {foo: 1, gameId: 1}
+    client.on('open', () => {
+      client.send(1)
+    })
     verifyMessageData(mockData, client, 'powers', timeout, t)
     await new Promise(resolve => setTimeout(resolve, 200)) // allow bootstrapping time
     await insertFakeData('powers', mockData, conn)
