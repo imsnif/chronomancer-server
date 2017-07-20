@@ -23,7 +23,6 @@ function clearTable (tableName, gameId, connection) {
 }
 
 function addPlayersToGame (gameId, connection) {
-  console.log(config.startingActions)
   return new Promise((resolve, reject) => {
     r.table('players').update({gameId, actions: config.startingActions, items: []}).run(connection, (err, result) => {
       if (err) return reject(err)
