@@ -15,8 +15,13 @@ module.exports = function (connection, wss) {
         if (err) return // TODO: log
         players.forEach(({gameId, ws}) => {
           try {
-            if (ws.readyState === WebSocket.OPEN && row.new_val.gameId === gameId) {
-              const data = JSON.stringify({[tableName]: row.new_val})
+            if (ws.readyState === WebSocket.OPEN && (
+              (row && row.new_val && row.new_val.gameId === gameId) ||
+              (row && row.old_val && row.old_val.gameId === gameId)
+            )) {
+              const content = row.new_val || Object.assign({}, row.old_val, {name: false})
+              // sending without a name deletes the entity
+              const data = JSON.stringify({[tableName]: content})
               ws.send(data)
             }
           } catch (e) {
