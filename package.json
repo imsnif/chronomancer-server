@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "pretest": "docker-compose -f ./test/fixtures/docker-compose.yml up -d",
-    "test": "standard && tape test/*.spec.js | tap-spec"
+    "test": "standard && tape test/*.spec.js | tap-spec",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "cron": "^1.2.1",
     "express": "^4.15.3",
     "express-validator": "^3.2.0",
     "rethinkdb": "^2.3.3",
