@@ -49,15 +49,15 @@ module.exports = function (connection) {
     stealing: async power => {
       if (!power || !power.timelineName) return Promise.resolve()
       const player = await getPlayer(power.playerId)
-      const targetPlayer = await getPlayer(power.target.name)
+      const targetPlayer = await getPlayer(power.target.id)
       const itemName = power.itemName
       const timeline = await getTimeline(power.timelineName)
       if (
         player.items.map(i => i.name).includes('steal') &&
         targetPlayer.items.map(i => i.name).includes(itemName) &&
-        timeline.players.includes(power.target.name)
+        timeline.players.includes(power.target.id)
       ) {
-        await removeItemFromPlayer(itemName, power.target.name)
+        await removeItemFromPlayer(itemName, power.target.id)
         await appendItemToPlayer(power.playerId, {name: itemName, source: false})
         return Promise.resolve()
       } else {
