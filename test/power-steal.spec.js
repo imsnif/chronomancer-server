@@ -29,7 +29,7 @@ test('Steal power resolution => success', async t => {
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: []
@@ -67,7 +67,7 @@ test('Steal power resolution => failure (negative score)', async t => {
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: [{id: 1, score: 2}]
@@ -105,7 +105,7 @@ test('Steal power resolution => failure (item no longer exists)', async t => {
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: []
@@ -143,7 +143,7 @@ test('Steal power resolution => failure (target item no longer exists)', async t
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: []
@@ -179,7 +179,7 @@ test('Steal power resolution => failure (player no longer in timeline)', async t
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: []
@@ -217,7 +217,7 @@ test('Steal power resolution => failure (target player no longer in timeline)', 
       endTime: now.getTime(),
       target: {
         type: 'player',
-        name: targetPlayerId
+        id: targetPlayerId
       },
       allies: [],
       enemies: []
