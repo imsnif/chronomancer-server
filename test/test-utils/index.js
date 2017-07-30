@@ -132,5 +132,13 @@ module.exports = {
         resolve(game)
       })
     })
+  },
+  async winGame (userId, gameId, connection) {
+    await new Promise((resolve, reject) => {
+      r.table('games').filter({id: gameId}).update({winnerId: userId}).run(connection, err => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
   }
 }

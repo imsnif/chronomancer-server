@@ -8,7 +8,8 @@ const {
   getPower,
   createPower,
   getAllUserPowers,
-  validatePowerTimes
+  validatePowerTimes,
+  winGame
 } = require('./test-utils')
 
 test('POST /timeline/combine/:item1/:item2/:timelineName (assist, prevent) => creates relevant power', async t => {
@@ -229,6 +230,25 @@ test('POST /timeline/combine/:item1/:item2/:timelineName => bad parameters - non
       .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/combine/:item1/:item2/:timelineName => bad parameters - game is over', async t => {
+  t.plan(1)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 8'
+    const userId = '1'
+    await winGame(userId, 1, conn)
+    await request(app)
+      .post(`/timeline/combine/assist/prevent/${timelineName}`)
+      .set('userId', userId)
+      .expect(403)
+    t.pass('request failed when game was over')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

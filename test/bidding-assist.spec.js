@@ -3,7 +3,7 @@
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerActions, getPower } = require('./test-utils')
+const { getPlayerActions, getPower, winGame } = require('./test-utils')
 
 test('POST /bidding/assist/:timelineName/:targetPlayerId => adds player to allies', async t => {
   t.plan(2)
@@ -158,6 +158,26 @@ test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - non
       .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /bidding/assist/:timelineName/:targetPlayerId => bad parameters - game is over', async t => {
+  t.plan(1)
+  try {
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const userId = '1'
+    const timelineName = 'Timeline 6'
+    const targetPlayerId = '1'
+    await winGame(userId, 1, conn)
+    await request(app)
+      .post(`/bidding/assist/${timelineName}/${targetPlayerId}`)
+      .set('userId', userId)
+      .expect(403)
+    t.pass('request failed when game is over')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
