@@ -133,3 +133,24 @@ test('Powers changes propagated through message channel', async t => {
     t.end()
   }
 })
+
+test('Game changes propagated through message channel', async t => {
+  t.plan(2)
+  try {
+    const conn = await fixtures()
+    const { client } = await mockServer(conn)
+    const timeout = failureTimeout(t)
+    const mockData = {foo: 1} // TODO: fix this when we filter by games
+    client.on('open', () => {
+      client.send(1)
+    })
+    verifyMessageData(mockData, client, 'games', timeout, t)
+    await new Promise(resolve => setTimeout(resolve, 200)) // allow bootstrapping time
+    await insertFakeData('games', mockData, conn)
+    t.pass() // somewhat of an ugly hack to avoid a race condition
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+    t.end()
+  }
+})
