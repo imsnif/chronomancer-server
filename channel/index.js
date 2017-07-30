@@ -6,8 +6,9 @@ const changeFeeds = require('./changefeeds')
 const { tables } = require('../config')
 
 function getInitData (tableName, connection, gameId) {
+  const filter = tableName === 'games' ? {id: gameId} : {gameId}
   return new Promise((resolve, reject) => {
-    r.db('chronomancer').table(tableName).filter({gameId})
+    r.db('chronomancer').table(tableName).filter(filter)
     .run(connection, (err, cursor) => {
       if (err) return reject(err)
       cursor.toArray((err, result) => {
@@ -29,11 +30,11 @@ module.exports = function (server, connection) {
       if (!player || !player.gameId) return
       const { gameId } = player
       feeds.subscribePlayer(player.id, gameId, ws)
-      const [ players, powers, timelines ] = await Promise.all(
+      const [ players, powers, timelines, games ] = await Promise.all(
         tables.map(tableName => getInitData(tableName, connection, gameId))
       )
       const message = {
-        players, powers, timelines
+        players, powers, timelines, games // TODO: filter games
       }
       ws.send(JSON.stringify(message))
     })

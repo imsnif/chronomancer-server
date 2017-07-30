@@ -17,7 +17,8 @@ module.exports = function (connection, wss) {
           try {
             if (ws.readyState === WebSocket.OPEN && (
               (row && row.new_val && row.new_val.gameId === gameId) ||
-              (row && row.old_val && row.old_val.gameId === gameId)
+              (row && row.old_val && row.old_val.gameId === gameId) ||
+              (tableName === 'games') // TODO: filter by gameId
             )) {
               const content = row.new_val || Object.assign({}, row.old_val, {name: false})
               // sending without a name deletes the entity

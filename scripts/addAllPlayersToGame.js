@@ -101,12 +101,20 @@ function createDb (connection) {
 
 async function createGame (connection, gameId) {
   const gameExists = await new Promise((resolve, reject) => {
-    r.table('games').filter({gameId}).count().run(connection, (err, result) => {
+    r.table('games').filter({id: gameId}).count().run(connection, (err, result) => {
       if (err) return reject(err)
       resolve(result)
     })
   })
-  if (gameExists) return Promise.resolve()
+  if (gameExists) {
+    await new Promise((resolve, reject) => {
+      r.table('games').get(gameId).update({winnerId: false}).run(connection, (err, result) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
+    return Promise.resolve()
+  }
   await new Promise((resolve, reject) => {
     r.table('games').insert({id: gameId}).run(connection, (err, result) => {
       if (err) return reject(err)
