@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express')
 const {
+  gameNotOver,
   userExists,
   hasEnoughActions,
   validateAndSanitizeUserId,
@@ -17,6 +18,7 @@ module.exports = function biddingRoute (connection) {
   const { decrementPlayerActions } = require('../service/player')(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
+  route.use(gameNotOver(connection))
   route.use(hasEnoughActions(connection))
   route.post(
     '/assist/:timelineName/:targetPlayerId',

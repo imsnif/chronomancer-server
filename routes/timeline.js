@@ -4,6 +4,7 @@ const player = require('../service/player')
 const timeline = require('../service/timeline')
 const power = require('../service/power')
 const {
+  gameNotOver,
   userExists,
   hasEnoughActions,
   validateAndSanitizeUserId,
@@ -36,6 +37,7 @@ module.exports = function timelineRoute (connection) {
   } = power(connection)
   route.use(validateAndSanitizeUserId)
   route.use(userExists(connection))
+  route.use(gameNotOver(connection))
   route.use(hasEnoughActions(connection))
   route.post(
     '/quest/:timelineName',

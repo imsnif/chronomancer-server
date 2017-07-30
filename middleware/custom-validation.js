@@ -4,6 +4,19 @@ const timeline = require('../service/timeline')
 const power = require('../service/power')
 
 module.exports = {
+  gameNotOver (connection) {
+    const { getGame } = player(connection)
+    return async function checkIfGameOver (req, res, next) {
+      const userId = req.headers.userid
+      const game = await getGame(userId)
+      if (game.winnerId) {
+        res.statusCode = 403
+        next(`Game ${game.id} is over!`)
+      } else {
+        next()
+      }
+    }
+  },
   hasEnoughActions (connection) {
     const { getPlayerActions } = player(connection)
     return async function checkIfUserHasEnoughActions (req, res, next) {

@@ -3,6 +3,19 @@ const r = require('rethinkdb')
 
 module.exports = function playerService (connection) {
   return {
+    async getGame (playerId) {
+      const { getPlayer } = playerService(connection)
+      const { gameId } = await getPlayer(playerId)
+      return new Promise((resolve, reject) => {
+        r.table('games').filter({id: gameId}).run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          cursor.toArray((err, results) => {
+            if (err) return reject(err)
+            resolve(results[0])
+          })
+        })
+      })
+    },
     appendItemToPlayer (id, item) {
       return new Promise((resolve, reject) => {
         r.table('players').filter({id}).update({
