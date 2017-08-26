@@ -1,27 +1,21 @@
 'use strict'
 const express = require('express')
+const passport = require('passport')
 const player = require('../service/player')
-const {
-  validateAndSanitizeUserId,
-  validateAndSanitizeUserName,
-  validateAndSanitizeUserPic
-} = require('../middleware/custom-validation')
 
 module.exports = function playerRoute (connection) {
   const route = express.Router()
   const {
     createOrUpdatePlayer
   } = player(connection)
-  route.use(validateAndSanitizeUserId)
-  route.use(validateAndSanitizeUserName)
-  route.use(validateAndSanitizeUserPic)
+  route.use(passport.authenticate('facebook-token', {session: false}))
   route.post(
     '/update',
     async (req, res, next) => {
       try {
-        const userId = String(req.headers.userid)
-        const userPic = req.headers.userpic
-        const userName = req.headers.name
+        const userId = String(req.user.id)
+        const userPic = req.user.photos[0].value
+        const userName = req.user.displayName
         await createOrUpdatePlayer(userId, userPic, userName)
         res.sendStatus(200)
       } catch (e) {
