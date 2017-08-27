@@ -16,9 +16,6 @@ test('POST /player/update => creates new player', async t => {
     const app = require('../app')(conn)
     await request(app)
       .post(`/player/update`)
-      .set('userId', userId)
-      .set('userpic', userpic)
-      .set('name', username)
       .expect(200)
     const player = await getPlayer(userId, conn)
     t.deepEquals(player, {
@@ -43,9 +40,6 @@ test('POST /player/update => updates existing player', async t => {
     const app = require('../app')(conn)
     await request(app)
       .post(`/player/update`)
-      .set('userId', userId)
-      .set('userpic', userpic)
-      .set('name', username)
       .expect(200)
     const player = await getPlayer(userId, conn)
     t.deepEquals(player, {

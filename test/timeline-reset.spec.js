@@ -8,19 +8,20 @@ const {
   getPower,
   validatePowerTimes,
   createPower,
-  getAllUserPowers
+  getAllUserPowers,
+  stubPassport
 } = require('./test-utils')
 
 test('POST /timeline/reset/:timelineName => resets timeline with existing players', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = '3'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
       .expect(200)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -49,13 +50,13 @@ test('POST /timeline/reset/:timelineName => resets timeline with existing player
 test('POST /timeline/reset/:timelineName => with no actions left', async t => {
   t.plan(2)
   try {
+    const userId = '5'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = '5'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -70,13 +71,13 @@ test('POST /timeline/reset/:timelineName => with no actions left', async t => {
 test('POST /timeline/reset/:timelineName => with no reset item', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = '1'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -91,11 +92,12 @@ test('POST /timeline/reset/:timelineName => with no reset item', async t => {
 test('POST /timeline/reset/:timelineName => bad parameters - no userId', async t => {
   t.plan(1)
   try {
+    stubPassport('foo', 'bar', null)
     const conn = await fixtures()
     const app = require('../app')(conn)
     await request(app)
       .post('/timeline/reset/Timeline 5')
-      .expect(400)
+      .expect(403)
     t.pass('request failed without a user id')
   } catch (e) {
     console.error(e.stack)
@@ -106,12 +108,12 @@ test('POST /timeline/reset/:timelineName => bad parameters - no userId', async t
 test('POST /timeline/reset/:timelineName => bad parameters - no timelineName', async t => {
   t.plan(1)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '3'
     await request(app)
       .post('/timeline/reset')
-      .set('userId', userId)
       .expect(404)
     t.pass('request failed without a timeline name')
   } catch (e) {
@@ -123,12 +125,12 @@ test('POST /timeline/reset/:timelineName => bad parameters - no timelineName', a
 test('POST /timeline/reset/:timelineName => bad parameters - non-existent user', async t => {
   t.plan(1)
   try {
+    const userId = '99999'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '99999'
     await request(app)
       .post('/timeline/reset/Timeline 1')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -140,12 +142,12 @@ test('POST /timeline/reset/:timelineName => bad parameters - non-existent user',
 test('POST /timeline/reset/:timelineName => bad parameters - non-existent timeline', async t => {
   t.plan(1)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '3'
     await request(app)
       .post('/timeline/reset/foo')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -157,13 +159,13 @@ test('POST /timeline/reset/:timelineName => bad parameters - non-existent timeli
 test('POST /timeline/reset/:timelineName => user not in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '3'
     const timelineName = 'Timeline 4'
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -178,10 +180,11 @@ test('POST /timeline/reset/:timelineName => user not in timeline', async t => {
 test('POST /timeline/reset/:timelineName => user busy (has power) in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
-    const userId = '3'
     const now = new Date()
     await createPower({
       playerId: userId,
@@ -199,7 +202,6 @@ test('POST /timeline/reset/:timelineName => user busy (has power) in timeline', 
     }, conn)
     await request(app)
       .post(`/timeline/reset/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getAllUserPowers(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)

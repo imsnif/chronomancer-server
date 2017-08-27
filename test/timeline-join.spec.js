@@ -3,18 +3,18 @@
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerActions, getTimeline } = require('./test-utils')
+const { getPlayerActions, getTimeline, stubPassport } = require('./test-utils')
 
 test('POST /timeline/join/:timelineName => joins timeline with no players', async t => {
   t.plan(1)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 4'
-    const userId = '3'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(200)
     const timeline = await getTimeline(timelineName, conn)
     t.ok(timeline.players.includes(userId), 'player joined timeline')
@@ -27,13 +27,13 @@ test('POST /timeline/join/:timelineName => joins timeline with no players', asyn
 test('POST /timeline/join/:timelineName => joins timeline with existing players', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 2'
-    const userId = '1'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(200)
     const timeline = await getTimeline(timelineName, conn)
     t.deepEquals(timeline.players.sort(), ['1', '2', '3'].sort(), 'player appended to timeline')
@@ -46,13 +46,13 @@ test('POST /timeline/join/:timelineName => joins timeline with existing players'
 test('POST /timeline/join/:timelineName => costs 1 action', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 2'
-    const userId = '1'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(200)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 9, 'one action was decremented')
@@ -65,13 +65,13 @@ test('POST /timeline/join/:timelineName => costs 1 action', async t => {
 test('POST /timeline/join/:timelineName => with no actions left', async t => {
   t.plan(2)
   try {
+    const userId = '5'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = '5'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const timeline = await getTimeline(timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -86,11 +86,12 @@ test('POST /timeline/join/:timelineName => with no actions left', async t => {
 test('POST /timeline/join/:timelineName => bad parameters - no userId', async t => {
   t.plan(1)
   try {
+    stubPassport('foo', 'bar', null)
     const conn = await fixtures()
     const app = require('../app')(conn)
     await request(app)
       .post('/timeline/join/Timeline 5')
-      .expect(400)
+      .expect(403)
     t.pass('request failed without a user id')
   } catch (e) {
     console.error(e.stack)
@@ -101,12 +102,12 @@ test('POST /timeline/join/:timelineName => bad parameters - no userId', async t 
 test('POST /timeline/join/:timelineName => bad parameters - no timelineName', async t => {
   t.plan(1)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '3'
     await request(app)
       .post('/timeline/join')
-      .set('userId', userId)
       .expect(404)
     t.pass('request failed without a timeline name')
   } catch (e) {
@@ -118,12 +119,12 @@ test('POST /timeline/join/:timelineName => bad parameters - no timelineName', as
 test('POST /timeline/join/:timelineName => bad parameters - non-existent user', async t => {
   t.plan(1)
   try {
+    const userId = '99999'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '99999'
     await request(app)
       .post('/timeline/join/Timeline 1')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -135,12 +136,12 @@ test('POST /timeline/join/:timelineName => bad parameters - non-existent user', 
 test('POST /timeline/join/:timelineName => bad parameters - non-existent timeline', async t => {
   t.plan(1)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '3'
     await request(app)
       .post('/timeline/join/foo')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -152,13 +153,13 @@ test('POST /timeline/join/:timelineName => bad parameters - non-existent timelin
 test('POST /timeline/join/:timelineName => user already in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     const timelineName = 'Timeline 1'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const timeline = await getTimeline(timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -173,13 +174,13 @@ test('POST /timeline/join/:timelineName => user already in timeline', async t =>
 test('POST /timeline/join/:timelineName => timeline is locked', async t => {
   t.plan(2)
   try {
+    const userId = '4'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '4'
     const timelineName = 'Timeline 5'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const timeline = await getTimeline(timelineName, conn)
     const actions = await getPlayerActions(userId, conn)

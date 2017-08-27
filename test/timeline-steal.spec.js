@@ -7,21 +7,22 @@ const {
   getPlayerActions,
   getPower,
   getAllUserPowers,
-  validatePowerTimes
+  validatePowerTimes,
+  stubPassport
 } = require('./test-utils')
 
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates relevant power', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
     const targetPlayerId = '4'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(200)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -51,15 +52,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates re
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no actions left', async t => {
   t.plan(2)
   try {
+    const userId = '5'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
     const targetPlayerId = '4'
-    const userId = '5'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -74,15 +75,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no ac
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no steal item', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
-    const userId = '1'
     const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -98,6 +99,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no st
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - no userId', async t => {
   t.plan(1)
   try {
+    stubPassport('foo', 'bar', null)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
@@ -105,7 +107,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
     const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .expect(400)
+      .expect(403)
     t.pass('request failed without a user id')
   } catch (e) {
     console.error(e.stack)
@@ -116,13 +118,13 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - no itemName', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal`)
-      .set('userId', userId)
       .expect(404)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -137,14 +139,14 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - no targetPlayerId', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'steal'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}`)
-      .set('userId', userId)
       .expect(404)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -159,15 +161,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - no timelineName', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'steal'
-    const userId = '3'
     const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}`)
-      .set('userId', userId)
       .expect(404)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -182,15 +184,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - non-existent user', async t => {
   t.plan(1)
   try {
+    const userId = '99999'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '99999'
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
     const targetPlayerId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed without a user id')
   } catch (e) {
@@ -202,15 +204,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - non-existent targetPlayerId', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
     const targetPlayerId = '99999'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -225,15 +227,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parameters - non-existent timeline', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'foo'
     const itemName = 'lock'
     const targetPlayerId = '4'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -248,15 +250,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => bad parame
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlayerId not in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 7'
     const itemName = 'lock'
     const targetPlayerId = '4'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -271,15 +273,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlay
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlayerId does not have item', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 7'
     const itemName = 'lock'
     const targetPlayerId = '1'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -294,15 +296,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => targetPlay
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user not in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '4'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 5'
     const itemName = 'lock'
     const targetPlayerId = '3'
-    const userId = '4'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -317,15 +319,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user not i
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user busy (has power) in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 6'
     const itemName = 'lock'
     const targetPlayerId = '4'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getAllUserPowers(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
@@ -340,15 +342,15 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => user busy 
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => cannot steal item from self', async t => {
   t.plan(2)
   try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
     const timelineName = 'Timeline 1'
     const itemName = 'lock'
     const targetPlayerId = '3'
-    const userId = '3'
     await request(app)
       .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
-      .set('userId', userId)
       .expect(403)
     const power = await getPower(userId, timelineName, conn)
     const actions = await getPlayerActions(userId, conn)

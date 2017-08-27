@@ -3,17 +3,17 @@
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerItems, getPlayerActions } = require('./test-utils')
+const { getPlayerItems, getPlayerActions, stubPassport } = require('./test-utils')
 
 test('POST /timeline/quest/:timelineName => adds relevant item to player', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', userId)
       .expect(200)
     const playerItems = await getPlayerItems(userId, conn)
     t.deepEquals(playerItems, [{source: 'Timeline 1', name: 'steal'}], 'Item added to player')
@@ -26,12 +26,12 @@ test('POST /timeline/quest/:timelineName => adds relevant item to player', async
 test('POST /timeline/quest/:timelineName => costs 1 action', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', userId)
       .expect(200)
     const playerActions = await getPlayerActions(userId, conn)
     t.equals(playerActions, 9, 'actions decremented by 1')
@@ -44,12 +44,12 @@ test('POST /timeline/quest/:timelineName => costs 1 action', async t => {
 test('POST /timeline/quest/:timelineName => with no actions left', async t => {
   t.plan(2)
   try {
+    const userId = '5'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '5'
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', userId)
       .expect(403)
     const playerItems = await getPlayerItems(userId, conn)
     const playerActions = await getPlayerActions(userId, conn)
@@ -74,12 +74,12 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
 test('POST /timeline/quest/:timelineName => appends to existing item list', async t => {
   t.plan(1)
   try {
+    const userId = '2'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '2'
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', userId)
       .expect(200)
     const playerItems = await getPlayerItems(userId, conn)
     t.deepEquals(playerItems, [
@@ -95,11 +95,12 @@ test('POST /timeline/quest/:timelineName => appends to existing item list', asyn
 test('POST /timeline/quest/:timelineName => bad parameters - no userId', async t => {
   t.plan(1)
   try {
+    stubPassport('foo', 'bar', null)
     const conn = await fixtures()
     const app = require('../app')(conn)
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .expect(400)
+      .expect(403)
     t.pass('request failed without a user id')
   } catch (e) {
     console.error(e.stack)
@@ -110,12 +111,12 @@ test('POST /timeline/quest/:timelineName => bad parameters - no userId', async t
 test('POST /timeline/quest/:timelineName => bad parameters - no timelineName', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     await request(app)
       .post('/timeline/quest')
-      .set('userId', userId)
       .expect(404)
     t.pass('request failed without a timeline name')
   } catch (e) {
@@ -127,12 +128,12 @@ test('POST /timeline/quest/:timelineName => bad parameters - no timelineName', a
 test('POST /timeline/quest/:timelineName => bad parameters - non-existent user', async t => {
   t.plan(1)
   try {
+    const userId = '99999'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '99999'
     await request(app)
       .post('/timeline/quest/Timeline 1')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -144,12 +145,12 @@ test('POST /timeline/quest/:timelineName => bad parameters - non-existent user',
 test('POST /timeline/quest/:timelineName => bad parameters - non-existent timeline', async t => {
   t.plan(1)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     await request(app)
       .post('/timeline/quest/foo')
-      .set('userId', userId)
       .expect(403)
     t.pass('request failed with a non-existent user')
   } catch (e) {
@@ -161,12 +162,12 @@ test('POST /timeline/quest/:timelineName => bad parameters - non-existent timeli
 test('POST /timeline/quest/:timelineName => user not in timeline', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const userId = '1'
     await request(app)
       .post('/timeline/quest/Timeline 4')
-      .set('userId', userId)
       .expect(403)
     const playerItems = await getPlayerItems(userId, conn)
     const playerActions = await getPlayerActions(userId, conn)
