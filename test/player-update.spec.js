@@ -1,33 +1,9 @@
 'use strict'
 
-const decache = require('decache')
 const test = require('tape')
 const request = require('supertest')
-const sinon = require('sinon')
 const fixtures = require('./fixtures')
-const { getPlayer } = require('./test-utils')
-const passport = require('passport')
-
-let origAuthenticate // https://github.com/sinonjs/sinon/issues/166
-
-function stubPassport (username, userpic, userId) {
-  decache('../app')
-  if (!origAuthenticate) {
-    origAuthenticate = passport.authenticate
-  }
-  passport.authenticate = origAuthenticate
-  sinon.stub(passport, 'authenticate').returns((req, res, next) => {
-    console.log('res.user.id:', userId)
-    req.user = {
-      id: userId,
-      photos: [{
-        value: userpic
-      }],
-      displayName: username
-    }
-    next()
-  })
-}
+const { getPlayer, stubPassport } = require('./test-utils')
 
 test('POST /player/update => creates new player', async t => {
   t.plan(1)

@@ -3,6 +3,11 @@
 const r = require('rethinkdb')
 const { powerDurations } = require('../../config')
 const _ = require('lodash')
+const decache = require('decache')
+const passport = require('passport')
+const sinon = require('sinon')
+
+let origAuthenticate // https://github.com/sinonjs/sinon/issues/166
 
 module.exports = {
   getPlayerItems (id, conn) {
@@ -139,6 +144,24 @@ module.exports = {
         if (err) return reject(err)
         resolve()
       })
+    })
+  },
+  stubPassport (username, userpic, userId) {
+    decache('../../app')
+    // otherwise passport.authenticate() will not be called once for each test
+    if (!origAuthenticate) {
+      origAuthenticate = passport.authenticate
+    }
+    passport.authenticate = origAuthenticate
+    sinon.stub(passport, 'authenticate').returns((req, res, next) => {
+      req.user = {
+        id: userId,
+        photos: [{
+          value: userpic
+        }],
+        displayName: username
+      }
+      next()
     })
   }
 }
