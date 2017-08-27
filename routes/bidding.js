@@ -1,10 +1,10 @@
 'use strict'
 const express = require('express')
+const passport = require('passport')
 const {
   gameNotOver,
   userExists,
   hasEnoughActions,
-  validateAndSanitizeUserId,
   timelineExists,
   targetPlayerExists,
   userHasItem,
@@ -16,7 +16,7 @@ module.exports = function biddingRoute (connection) {
   const route = express.Router()
   const { addAlly, addEnemy } = require('../service/power')(connection)
   const { decrementPlayerActions } = require('../service/player')(connection)
-  route.use(validateAndSanitizeUserId)
+  route.use(passport.authenticate('facebook-token', {session: false}))
   route.use(userExists(connection))
   route.use(gameNotOver(connection))
   route.use(hasEnoughActions(connection))
@@ -31,7 +31,7 @@ module.exports = function biddingRoute (connection) {
       try {
         const { timelineName } = req.params
         const targetPlayerId = req.params.targetPlayerId
-        const userId = req.headers.userid
+        const userId = String(req.user.id)
         await addAlly(userId, timelineName, targetPlayerId)
         await decrementPlayerActions(userId)
         res.sendStatus(200)
@@ -51,7 +51,7 @@ module.exports = function biddingRoute (connection) {
       try {
         const { timelineName } = req.params
         const targetPlayerId = req.params.targetPlayerId
-        const userId = req.headers.userid
+        const userId = String(req.user.id)
         await addEnemy(userId, timelineName, targetPlayerId)
         await decrementPlayerActions(userId)
         res.sendStatus(200)

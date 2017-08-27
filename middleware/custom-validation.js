@@ -7,7 +7,7 @@ module.exports = {
   gameNotOver (connection) {
     const { getGame } = player(connection)
     return async function checkIfGameOver (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const game = await getGame(userId)
       if (game.winnerId) {
         res.statusCode = 403
@@ -20,7 +20,7 @@ module.exports = {
   hasEnoughActions (connection) {
     const { getPlayerActions } = player(connection)
     return async function checkIfUserHasEnoughActions (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const actionsLeft = await getPlayerActions(userId, connection)
       if (actionsLeft < 1) {
         res.statusCode = 403
@@ -33,7 +33,7 @@ module.exports = {
   userExists (connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserExists (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const player = await getPlayer(userId, connection)
       if (!player) {
         res.statusCode = 403
@@ -85,7 +85,7 @@ module.exports = {
   userInTimeline (connection) {
     const { getTimeline } = timeline(connection)
     return async function checkIfUserExists (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const timelineName = req.params.timelineName
       const timeline = await getTimeline(timelineName)
       if (timeline.players.includes(userId)) {
@@ -113,7 +113,7 @@ module.exports = {
   userHasNoPowerInTimeline (connection) {
     const { getPower } = power(connection)
     return async function checkIfUserIsNotBusy (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const timelineName = req.params.timelineName
       const power = await getPower(userId, timelineName)
       if (!power) {
@@ -127,7 +127,7 @@ module.exports = {
   userNotInTimeline (connection) {
     const { getTimeline } = timeline(connection)
     return async function checkIfUserExists (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const timelineName = req.params.timelineName
       const timeline = await getTimeline(timelineName)
       if (timeline.players.includes(userId)) {
@@ -177,7 +177,7 @@ module.exports = {
   userHasItem (itemName, connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItem (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const player = await getPlayer(userId, connection)
       const hasItem = player.items.map(i => i.name).includes(itemName)
       if (!hasItem) {
@@ -191,7 +191,7 @@ module.exports = {
   userHasItemsInArgs (connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItems (req, res, next) {
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       const { item1, item2 } = req.params
       const player = await getPlayer(userId, connection)
       const itemNames = player.items.map(i => i.name)
@@ -261,7 +261,7 @@ module.exports = {
   targetPlayerIsNotUser (connection) {
     return async function checkIfUserExists (req, res, next) {
       const targetPlayerId = req.params.targetPlayerId
-      const userId = req.headers.userid
+      const userId = String(req.user.id)
       if (targetPlayerId === userId) {
         res.statusCode = 403
         next('Cannot use this power on self')
