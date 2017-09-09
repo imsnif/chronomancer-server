@@ -4,7 +4,12 @@ const test = require('tape')
 const _ = require('lodash')
 const fixtures = require('./fixtures')
 const mockServer = require('./mock-server')
-const { sortData, failureTimeout, insertFakeData } = require('./test-utils')
+const {
+  sortData,
+  failureTimeout,
+  insertFakeData,
+  stubPassport
+} = require('./test-utils')
 
 function verifyMessageData (mockData, client, tableName, timeout, t) {
   let counter = 0
@@ -31,6 +36,8 @@ function verifyMessageData (mockData, client, tableName, timeout, t) {
 test('Initial data is sent on connection', async t => {
   t.plan(3)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const mockData = require('./fixtures/mock-data')
@@ -74,6 +81,8 @@ test('Initial data is sent on connection', async t => {
 test('Players changes propagated through message channel', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
@@ -95,6 +104,8 @@ test('Players changes propagated through message channel', async t => {
 test('Timelines changes propagated through message channel', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
@@ -116,6 +127,8 @@ test('Timelines changes propagated through message channel', async t => {
 test('Powers changes propagated through message channel', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
@@ -137,6 +150,8 @@ test('Powers changes propagated through message channel', async t => {
 test('Game changes propagated through message channel', async t => {
   t.plan(2)
   try {
+    const userId = '1'
+    stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const { client } = await mockServer(conn)
     const timeout = failureTimeout(t)
