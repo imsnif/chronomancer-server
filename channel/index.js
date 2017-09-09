@@ -1,7 +1,8 @@
 'use strict'
 const r = require('rethinkdb')
-const WebSocket = require('ws')
 const changeFeeds = require('./changefeeds')
+const passport = require('passport')
+const express = require('express')
 
 const { tables } = require('../config')
 
@@ -19,30 +20,29 @@ function getInitData (tableName, connection, gameId) {
   })
 }
 
-module.exports = function (server, connection) {
+module.exports = function (app, connection) {
   connection.use('chronomancer')
   const { getPlayer } = require('../service/player')(connection)
-  const wss = new WebSocket.Server({ server })
-  const feeds = changeFeeds(connection, wss)
-  wss.on('connection', ws => {
-    ws.once('message', async m => {
-      const player = await getPlayer(m)
-      if (!player || !player.gameId) return
-      const { gameId } = player
-      feeds.subscribePlayer(player.id, gameId, ws)
-      const [ players, powers, timelines, games ] = await Promise.all(
-        tables.map(tableName => getInitData(tableName, connection, gameId))
-      )
-      const message = {
-        players, powers, timelines, games // TODO: filter games
-      }
-      ws.send(JSON.stringify(message))
-    })
+  const feeds = changeFeeds(connection)
+  const router = express.Router()
+  router.use(passport.authenticate('facebook-token', {session: false}))
+  router.ws('/feed', async (ws, req) => {
+    const player = await getPlayer(req.user.id)
+    if (!player || !player.gameId) return
+    const { gameId } = player
+    feeds.subscribePlayer(player.id, gameId, ws)
+    const [ players, powers, timelines, games ] = await Promise.all(
+      tables.map(tableName => getInitData(tableName, connection, gameId))
+    )
+    const message = {
+      players, powers, timelines, games // TODO: filter games
+    }
+    ws.send(JSON.stringify(message))
   })
-  server.on('close', () => {
+  app.use('/socket', router)
+  app.on('close', () => {
     feeds.cursors.forEach(cursor => {
       cursor.close()
     })
   })
-  return wss
 }

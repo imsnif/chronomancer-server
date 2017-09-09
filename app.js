@@ -20,6 +20,8 @@ passport.use(new FacebookTokenStrategy({
 }))
 
 const app = express()
+const wss = require('express-ws')(app)
+app.wss = wss.getWss()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(passport.initialize())

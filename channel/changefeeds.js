@@ -4,7 +4,7 @@ const WebSocket = require('ws')
 
 const { tables } = require('../config')
 
-module.exports = function (connection, wss) {
+module.exports = function (connection) {
   let cursors = []
   let players = []
   tables.forEach(tableName => {

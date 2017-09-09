@@ -659,6 +659,12 @@ express-validator@^3.2.0:
     lodash "^4.16.0"
     validator "~6.2.0"
 
+express-ws@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/express-ws/-/express-ws-3.0.0.tgz#7ddaaf3b7c758865c099905989911b6234477dbd"
+  dependencies:
+    ws "^2.0.0"
+
 express@^4.15.3:
   version "4.15.3"
   resolved "https://registry.npmjs.org/express/-/express-4.15.3.tgz#bab65d0f03aa80c358408972fc700f916944b662"
@@ -1846,6 +1852,13 @@ write@^0.2.1:
   resolved "https://registry.npmjs.org/write/-/write-0.2.1.tgz#5fc03828e264cea3fe91455476f7a3c566cb0757"
   dependencies:
     mkdirp "^0.5.1"
+
+ws@^2.0.0:
+  version "2.3.1"
+  resolved "https://registry.npmjs.org/ws/-/ws-2.3.1.tgz#6b94b3e447cb6a363f785eaf94af6359e8e81c80"
+  dependencies:
+    safe-buffer "~5.0.1"
+    ultron "~1.1.0"
 
 ws@^3.0.0:
   version "3.0.0"
