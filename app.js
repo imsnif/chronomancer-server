@@ -8,7 +8,7 @@ const passport = require('passport')
 const FacebookTokenStrategy = require('passport-facebook-token')
 
 function errorHandler (err, req, res, next) {
-  res.send(res.statusCode || 500).json({error: err.msg})
+  if (err) res.end()
 }
 
 passport.use(new FacebookTokenStrategy({
@@ -26,7 +26,6 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(passport.initialize())
 app.use(expressValidator())
-app.use(errorHandler)
 
 module.exports = function (connection) {
   connection.use('chronomancer')
@@ -37,5 +36,6 @@ module.exports = function (connection) {
   app.use('/bidding', bidding)
   app.use('/player', player)
   app.use(express.static(path.join(__dirname, 'public')))
+  app.use(errorHandler)
   return app
 }
