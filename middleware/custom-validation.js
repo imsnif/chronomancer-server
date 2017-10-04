@@ -76,7 +76,7 @@ module.exports = {
       const player = await getPlayer(targetPlayerId, connection)
       if (!player) {
         res.statusCode = 403
-        next('No such targetPlayer')
+        next('No such player')
       } else {
         next()
       }
@@ -92,7 +92,7 @@ module.exports = {
         next()
       } else {
         res.statusCode = 403
-        next('User not in timeline')
+        next('You are not in this timeline')
       }
     }
   },
@@ -106,7 +106,7 @@ module.exports = {
         next()
       } else {
         res.statusCode = 403
-        next('Target player not in timeline')
+        next('Player is not in timeline')
       }
     }
   },
@@ -120,7 +120,7 @@ module.exports = {
         next()
       } else {
         res.statusCode = 403
-        next(`User is busy ${power.name} in timeline ${timelineName}`)
+        next('You are busy in this timeline')
       }
     }
   },
@@ -132,7 +132,7 @@ module.exports = {
       const timeline = await getTimeline(timelineName)
       if (timeline.players.includes(userId)) {
         res.statusCode = 403
-        next('User already in timeline')
+        next('You are already in this timeline')
       } else {
         next()
       }
@@ -182,7 +182,7 @@ module.exports = {
       const hasItem = player.items.map(i => i.name).includes(itemName)
       if (!hasItem) {
         res.statusCode = 403
-        next(`User does not have the ${itemName} item`)
+        next(`You do not have the ${itemName} item`)
       } else {
         next()
       }
@@ -199,7 +199,7 @@ module.exports = {
         next()
       } else {
         res.statusCode = 403
-        next(`User does not have the ${item1} and the ${item2} items`)
+        next(`You do not have both items`)
       }
     }
   },
