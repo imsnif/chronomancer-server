@@ -8,7 +8,7 @@ const passport = require('passport')
 const FacebookTokenStrategy = require('passport-facebook-token')
 
 function errorHandler (err, req, res, next) {
-  if (err) res.end()
+  if (err) res.end(err)
 }
 
 passport.use(new FacebookTokenStrategy({
