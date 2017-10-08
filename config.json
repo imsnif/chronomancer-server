@@ -8,7 +8,7 @@
     "Winning": 10000
   },
   "tables": [
-    "players", "powers", "timelines", "games"
+    "players", "powers", "timelines", "games", "messages"
   ],
   "startingActions": 10
 }

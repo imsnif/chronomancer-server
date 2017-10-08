@@ -167,5 +167,14 @@ module.exports = {
   games: [
     {id: 1},
     {id: 2, winnerId: '2'}
+  ],
+  messages: [
+    {
+      id: 1,
+      playerId: 1,
+      text: 'is locking the timeline',
+      timelineName: 'Timeline 0-1',
+      startTime: now.getTime()
+    }
   ]
 }

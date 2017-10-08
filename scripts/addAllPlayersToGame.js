@@ -133,6 +133,7 @@ async function createGame (connection, gameId) {
     await createGame(connection, gameId)
     await clearTable('timelines', gameId, connection)
     await clearTable('powers', gameId, connection)
+    await clearTable('messages', gameId, connection)
     await addPlayersToGame(gameId, connection)
     await addTimelines(gameId, connection)
     process.exit()
