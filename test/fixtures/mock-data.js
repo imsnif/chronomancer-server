@@ -171,10 +171,21 @@ module.exports = {
   messages: [
     {
       id: 1,
+      gameId: 1,
       playerId: 1,
       text: 'is locking the timeline',
       timelineName: 'Timeline 0-1',
-      startTime: now.getTime()
+      startTime: now.getTime(),
+      readBy: []
+    },
+    {
+      id: 2,
+      gameId: 1,
+      playerId: 2,
+      text: 'has travelled here',
+      timelineName: 'Timeline 0-1',
+      startTime: now.getTime(),
+      readBy: []
     }
   ]
 }
