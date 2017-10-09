@@ -13,7 +13,7 @@ module.exports = function (connection) {
       cursors.push(cursor)
       cursor.each((err, row) => {
         if (err) return // TODO: log
-        players.forEach(({gameId, ws}) => {
+        players.forEach(({playerId, gameId, ws}) => {
           try {
             if (ws.readyState === WebSocket.OPEN && (
               (row && row.new_val && row.new_val.gameId === gameId) ||
@@ -22,6 +22,14 @@ module.exports = function (connection) {
             )) {
               const content = row.new_val || Object.assign({}, row.old_val, {name: false})
               // sending without a name deletes the entity
+              if (tableName === 'messages') {
+                const formatted = Object.assign({}, content, { // TODO: merge with formatting in index and refactor
+                  readBy: undefined,
+                  read: content.readBy.includes(playerId)
+                })
+                const data = JSON.stringify({[tableName]: formatted})
+                return ws.send(data)
+              }
               const data = JSON.stringify({[tableName]: content})
               ws.send(data)
             }
