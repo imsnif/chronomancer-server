@@ -1,9 +1,16 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerActions, getTimeline, stubPassport } = require('./test-utils')
+const {
+  getPlayerActions,
+  getTimeline,
+  stubPassport,
+  getMessages
+} = require('./test-utils')
 
 test('POST /timeline/join/:timelineName => joins timeline with no players', async t => {
   t.plan(1)
@@ -18,6 +25,32 @@ test('POST /timeline/join/:timelineName => joins timeline with no players', asyn
       .expect(200)
     const timeline = await getTimeline(timelineName, conn)
     t.ok(timeline.players.includes(userId), 'player joined timeline')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/join/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 4'
+    await request(app)
+      .post(`/timeline/join/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: '3',
+      readBy: [],
+      text: 'has travelled to this timeline',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
@@ -10,7 +12,8 @@ const {
   getAllUserPowers,
   validatePowerTimes,
   winGame,
-  stubPassport
+  stubPassport,
+  getMessages
 } = require('./test-utils')
 
 test('POST /timeline/combine/:item1/:item2/:timelineName (assist, prevent) => creates relevant power', async t => {
@@ -45,6 +48,34 @@ test('POST /timeline/combine/:item1/:item2/:timelineName (assist, prevent) => cr
     }
     t.deepEquals(validatePowerTimes(power), expectedPower, 'power created properly')
     t.equals(actions, 9, 'actions decremented by 1')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/combine/:item1/:item2/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '6'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 8'
+    const item1 = 'assist'
+    const item2 = 'prevent'
+    await request(app)
+      .post(`/timeline/combine/${item1}/${item2}/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: userId,
+      readBy: [],
+      text: 'is combining items',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

@@ -1,5 +1,6 @@
 'use strict'
 
+const _ = require('lodash')
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
@@ -10,7 +11,8 @@ const {
   createPower,
   getAllUserPowers,
   validatePowerTimes,
-  stubPassport
+  stubPassport,
+  getMessages
 } = require('./test-utils')
 
 test('POST /timeline/lock/:timelineName => creates relevant power', async t => {
@@ -44,6 +46,32 @@ test('POST /timeline/lock/:timelineName => creates relevant power', async t => {
     t.deepEquals(validatePowerTimes(power), expectedPower, 'power created properly')
     t.equals(actions, 9, 'actions decremented by 1')
     t.equals(timeline.isLocked, false, 'timeline still unlocked')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/lock/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 1'
+    await request(app)
+      .post(`/timeline/lock/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: '3',
+      readBy: [],
+      text: 'is locking the timeline',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

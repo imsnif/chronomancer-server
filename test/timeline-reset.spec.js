@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
@@ -9,7 +11,8 @@ const {
   validatePowerTimes,
   createPower,
   getAllUserPowers,
-  stubPassport
+  stubPassport,
+  getMessages
 } = require('./test-utils')
 
 test('POST /timeline/reset/:timelineName => resets timeline with existing players', async t => {
@@ -41,6 +44,32 @@ test('POST /timeline/reset/:timelineName => resets timeline with existing player
     }
     t.deepEquals(validatePowerTimes(power), expectedPower, 'power created properly')
     t.equals(actions, 9, 'one action was decremented')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/reset/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 1'
+    await request(app)
+      .post(`/timeline/reset/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: userId,
+      readBy: [],
+      text: 'is resetting the timeline',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

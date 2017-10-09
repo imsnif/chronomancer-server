@@ -1,9 +1,15 @@
 'use strict'
 
+const _ = require('lodash')
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
-const { getPlayerItems, getPlayerActions, stubPassport } = require('./test-utils')
+const {
+  getPlayerItems,
+  getPlayerActions,
+  stubPassport,
+  getMessages
+} = require('./test-utils')
 
 test('POST /timeline/quest/:timelineName => adds relevant item to player', async t => {
   t.plan(1)
@@ -17,6 +23,32 @@ test('POST /timeline/quest/:timelineName => adds relevant item to player', async
       .expect(200)
     const playerItems = await getPlayerItems(userId, conn)
     t.deepEquals(playerItems, [{source: 'Timeline 1', name: 'steal'}], 'Item added to player')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/quest/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 1'
+    await request(app)
+      .post(`/timeline/quest/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: userId,
+      readBy: [],
+      text: 'is questing for steal',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

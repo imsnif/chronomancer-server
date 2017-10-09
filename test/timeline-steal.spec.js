@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const request = require('supertest')
 const fixtures = require('./fixtures')
@@ -8,7 +10,8 @@ const {
   getPower,
   getAllUserPowers,
   validatePowerTimes,
-  stubPassport
+  stubPassport,
+  getMessages
 } = require('./test-utils')
 
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates relevant power', async t => {
@@ -43,6 +46,34 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates re
     }
     t.deepEquals(validatePowerTimes(power), expectedPower, 'power created properly')
     t.equals(actions, 9, 'actions decremented by 1')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => creates relevant message', async t => {
+  t.plan(1)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 1'
+    const itemName = 'lock'
+    const targetPlayerId = '4'
+    await request(app)
+      .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
+      .expect(200)
+    const messages = await getMessages(conn)
+    const relevantMessage = messages.find(m => m.playerId === userId)
+    t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId: userId,
+      readBy: [],
+      text: 'is stealing an item',
+      timelineName
+    }, 'message created as expected')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
