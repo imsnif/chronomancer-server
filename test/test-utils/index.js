@@ -102,6 +102,17 @@ module.exports = {
       })
     })
   },
+  getMessages (conn) {
+    return new Promise((resolve, reject) => {
+      r.db('chronomancer').table('messages').run(conn, (err, cursor) => {
+        if (err) return reject(err)
+        cursor.toArray((err, results) => {
+          if (err) return reject(err)
+          resolve(results)
+        })
+      })
+    })
+  },
   validatePowerTimes (power) {
     const duration = powerDurations[power.name]
     const range = 1000

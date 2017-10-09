@@ -184,7 +184,7 @@ module.exports = {
       playerId: 2,
       text: 'has travelled here',
       timelineName: 'Timeline 0-1',
-      startTime: now.getTime(),
+      startTime: now.getTime() + 5000,
       readBy: []
     }
   ]
