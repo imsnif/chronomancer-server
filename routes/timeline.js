@@ -4,6 +4,7 @@ const passport = require('passport')
 const player = require('../service/player')
 const timeline = require('../service/timeline')
 const power = require('../service/power')
+const message = require('../service/message')
 const {
   gameNotOver,
   userExists,
@@ -35,6 +36,9 @@ module.exports = function timelineRoute (connection) {
   const {
     createPower
   } = power(connection)
+  const {
+    createMessage
+  } = message(connection)
   route.use(passport.authenticate('facebook-token', {session: false}))
   route.use(userExists(connection))
   route.use(gameNotOver(connection))
@@ -46,13 +50,18 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         const itemType = await getTimelineItemType(timelineName)
         await appendItemToPlayer(
-          userId,
+          playerId,
           {name: itemType, source: timelineName}, connection
         )
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: `is questing for ${itemType}`,
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -69,13 +78,18 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         await createPower({
-          playerId: userId,
+          playerId,
           name: 'Locking',
           timelineName
         })
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: 'is locking the timeline',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -92,13 +106,18 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         await createPower({
-          playerId: userId,
+          playerId,
           name: 'Unlocking',
           timelineName
         })
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: 'is unlocking the timeline',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -113,9 +132,14 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
-        const userId = String(req.user.id)
-        await addPlayerToTimeline(timelineName, userId)
-        await decrementPlayerActions(userId)
+        const playerId = String(req.user.id)
+        await addPlayerToTimeline(timelineName, playerId)
+        await createMessage({
+          text: 'has travelled to this timeline',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -131,13 +155,18 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         await createPower({
-          playerId: userId,
+          playerId,
           name: 'Resetting',
           timelineName
         })
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: 'is resetting the timeline',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -157,9 +186,9 @@ module.exports = function timelineRoute (connection) {
       try {
         const { timelineName, itemName } = req.params
         const targetPlayerId = req.params.targetPlayerId
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         await createPower({
-          playerId: userId,
+          playerId,
           name: 'Stealing',
           target: {
             type: 'player',
@@ -168,7 +197,12 @@ module.exports = function timelineRoute (connection) {
           itemName,
           timelineName
         })
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: 'is stealing an item',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
@@ -185,12 +219,12 @@ module.exports = function timelineRoute (connection) {
     async (req, res, next) => {
       try {
         const { timelineName, item1, item2 } = req.params
-        const userId = String(req.user.id)
+        const playerId = String(req.user.id)
         const targetItem = item1 === 'assist' && item2 === 'prevent' ? 'lock'
           : item1 === 'steal' && item2 === 'reset' ? 'unlock'
           : item1 === 'lock' && item2 === 'unlock' ? 'win' : 'N/A'
         await createPower({
-          playerId: userId,
+          playerId,
           name: targetItem === 'win' ? 'Winning' : 'Combining',
           target: {
             type: 'timeline',
@@ -199,7 +233,12 @@ module.exports = function timelineRoute (connection) {
           },
           timelineName
         })
-        await decrementPlayerActions(userId)
+        await createMessage({
+          text: 'is combining items',
+          timelineName,
+          playerId
+        })
+        await decrementPlayerActions(playerId)
         res.sendStatus(200)
       } catch (e) {
         next(e)
