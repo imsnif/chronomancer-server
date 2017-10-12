@@ -1,10 +1,12 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const proxyquire = require('proxyquire')
 const sinon = require('sinon')
-const { createPower, getAllPowers } = require('./test-utils')
+const { createPower, getAllPowers, getMessages } = require('./test-utils')
 
 function getMockedJobs (handle) {
   return proxyquire('../jobs', {
@@ -149,7 +151,7 @@ test('Corrupted jobs are ignored and do not affect other jobs', async t => {
 })
 
 test('Negative score jobs are deleted and not resolved', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const handle = {
@@ -175,11 +177,20 @@ test('Negative score jobs are deleted and not resolved', async t => {
     )
     await jobs()
     const powers = await getAllPowers(conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(powers.length, powersBefore.length, 'power deleted')
     t.ok(
       handle.foo.notCalled,
       'Failed power does not resolve'
     )
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      readBy: [],
+      text: 'Failed while foo: too much resistance',
+      timelineName
+    }, 'failure message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

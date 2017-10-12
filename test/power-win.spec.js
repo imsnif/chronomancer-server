@@ -1,12 +1,15 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const jobsFactory = require('../jobs')
 const {
   createPower,
   getPower,
-  getGame
+  getGame,
+  getMessages
 } = require('./test-utils')
 
 test('Win power resolution => success', async t => {
@@ -43,7 +46,7 @@ test('Win power resolution => success', async t => {
 })
 
 test('Win power resolution => failure (negative score)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -67,8 +70,17 @@ test('Win power resolution => failure (negative score)', async t => {
     await jobs()
     const game = await getGame(1, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(game.winnerId, undefined, 'Player was not declared as winner')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while winning: too much resistance'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -76,7 +88,7 @@ test('Win power resolution => failure (negative score)', async t => {
 })
 
 test('Win power resolution => failure (items no longer exists)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -100,8 +112,17 @@ test('Win power resolution => failure (items no longer exists)', async t => {
     await jobs()
     const game = await getGame(1, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(game.winnerId, undefined, 'Player was not declared as winner')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Winning: never had required items!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -109,7 +130,7 @@ test('Win power resolution => failure (items no longer exists)', async t => {
 })
 
 test('Win power resolution => failure (one item no longer exists)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -133,8 +154,17 @@ test('Win power resolution => failure (one item no longer exists)', async t => {
     await jobs()
     const game = await getGame(1, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(game.winnerId, undefined, 'Player was not declared as winner')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Winning: never had required items!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -142,7 +172,7 @@ test('Win power resolution => failure (one item no longer exists)', async t => {
 })
 
 test('Win power resolution => failure (player no longer in timeline)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -166,8 +196,17 @@ test('Win power resolution => failure (player no longer in timeline)', async t =
     await jobs()
     const game = await getGame(1, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(game.winnerId, undefined, 'Player was not declared as winner')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while winning: was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

@@ -1,12 +1,15 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const jobsFactory = require('../jobs')
 const {
   createPower,
   getPower,
-  getPlayerItems
+  getPlayerItems,
+  getMessages
 } = require('./test-utils')
 
 test('Combine power resolution => success (assist, prevent)', async t => {
@@ -88,7 +91,7 @@ test('Combine power resolution => success (reset, steal)', async t => {
 })
 
 test('Combine power resolution => failure (negative score)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -113,11 +116,20 @@ test('Combine power resolution => failure (negative score)', async t => {
     await jobs()
     const items = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(items, [
       {name: 'assist', source: 'Timeline 2'},
       {name: 'prevent', source: 'Timeline 2'}
     ], 'player items unchanged')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while combining: too much resistance'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -125,7 +137,7 @@ test('Combine power resolution => failure (negative score)', async t => {
 })
 
 test('Combine power resolution => failure (items no longer exists) (assist, prevent)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -150,8 +162,17 @@ test('Combine power resolution => failure (items no longer exists) (assist, prev
     await jobs()
     const items = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(items, [], 'player items unchanged')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Combining: never had required items!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -196,7 +217,7 @@ test('Combine power resolution => failure (one item no longer exists) (reset, st
 })
 
 test('Combine power resolution => failure (player no longer in timeline)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -221,11 +242,20 @@ test('Combine power resolution => failure (player no longer in timeline)', async
     await jobs()
     const items = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(items, [
       {name: 'assist', source: 'Timeline 2'},
       {name: 'prevent', source: 'Timeline 2'}
     ], 'player items unchanged')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while combining: was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

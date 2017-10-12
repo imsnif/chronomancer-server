@@ -1,9 +1,16 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const jobsFactory = require('../jobs')
-const { getTimeline, createPower, getPower } = require('./test-utils')
+const {
+  getTimeline,
+  createPower,
+  getPower,
+  getMessages
+} = require('./test-utils')
 
 test('Lock power resolution => success', async t => {
   t.plan(2)
@@ -39,7 +46,7 @@ test('Lock power resolution => success', async t => {
 })
 
 test('Lock power resolution => failure (negative score)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -63,8 +70,17 @@ test('Lock power resolution => failure (negative score)', async t => {
     await jobs()
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(timeline.isLocked, false, 'timeline is unlocked')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while locking: too much resistance'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -72,7 +88,7 @@ test('Lock power resolution => failure (negative score)', async t => {
 })
 
 test('Lock power resolution => failure (item no longer exists)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -96,8 +112,17 @@ test('Lock power resolution => failure (item no longer exists)', async t => {
     await jobs()
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(timeline.isLocked, false, 'timeline is unlocked')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Locking: never had lock item!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -105,7 +130,7 @@ test('Lock power resolution => failure (item no longer exists)', async t => {
 })
 
 test('Lock power resolution => failure (player no longer in timeline)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -129,8 +154,17 @@ test('Lock power resolution => failure (player no longer in timeline)', async t 
     await jobs()
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(timeline.isLocked, false, 'timeline is unlocked')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while locking: was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

@@ -1,12 +1,15 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const jobsFactory = require('../jobs')
 const {
   createPower,
   getPower,
-  getPlayerItems
+  getPlayerItems,
+  getMessages
 } = require('./test-utils')
 
 test('Steal power resolution => success', async t => {
@@ -48,7 +51,7 @@ test('Steal power resolution => success', async t => {
 })
 
 test('Steal power resolution => failure (negative score)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -76,9 +79,18 @@ test('Steal power resolution => failure (negative score)', async t => {
     const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
     t.ok(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 2'), 'Item still in target\'s inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while stealing: too much resistance'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -86,7 +98,7 @@ test('Steal power resolution => failure (negative score)', async t => {
 })
 
 test('Steal power resolution => failure (item no longer exists)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -114,9 +126,18 @@ test('Steal power resolution => failure (item no longer exists)', async t => {
     const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
     t.ok(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 2'), 'Item still in target\'s inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Stealing: never had steal item!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -124,7 +145,7 @@ test('Steal power resolution => failure (item no longer exists)', async t => {
 })
 
 test('Steal power resolution => failure (target item no longer exists)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -151,8 +172,17 @@ test('Steal power resolution => failure (target item no longer exists)', async t
     await jobs()
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Stealing: target never had item!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -160,7 +190,7 @@ test('Steal power resolution => failure (target item no longer exists)', async t
 })
 
 test('Steal power resolution => failure (player no longer in timeline)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -188,9 +218,18 @@ test('Steal power resolution => failure (player no longer in timeline)', async t
     const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
     t.ok(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 3'), 'Item still in target\'s inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while stealing: was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -198,7 +237,7 @@ test('Steal power resolution => failure (player no longer in timeline)', async t
 })
 
 test('Steal power resolution => failure (target player no longer in timeline)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -226,9 +265,18 @@ test('Steal power resolution => failure (target player no longer in timeline)', 
     const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
     t.ok(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 2'), 'Item still in target\'s inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Stealing: target was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

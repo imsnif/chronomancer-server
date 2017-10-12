@@ -1,5 +1,7 @@
 'use strict'
 
+const _ = require('lodash')
+
 const test = require('tape')
 const fixtures = require('./fixtures')
 const jobsFactory = require('../jobs')
@@ -7,7 +9,8 @@ const {
   getTimeline,
   createPower,
   getPower,
-  getPlayerItems
+  getPlayerItems,
+  getMessages
 } = require('./test-utils')
 
 test('Reset power resolution => success', async t => {
@@ -56,7 +59,7 @@ test('Reset power resolution => success', async t => {
 })
 
 test('Reset power resolution => failure (negative score)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -87,9 +90,18 @@ test('Reset power resolution => failure (negative score)', async t => {
       origTimeline.players.map(pId => getPlayerItems(pId, conn))
     )
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(origTimeline.players, timeline.players, 'all players still in timeline')
     t.deepEquals(origPlayerItems, playerItems, 'player items have not changed')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while resetting: too much resistance'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -97,7 +109,7 @@ test('Reset power resolution => failure (negative score)', async t => {
 })
 
 test('Reset power resolution => failure (item no longer exists)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -128,9 +140,18 @@ test('Reset power resolution => failure (item no longer exists)', async t => {
       origTimeline.players.map(pId => getPlayerItems(pId, conn))
     )
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(origTimeline.players, timeline.players, 'all players still in timeline')
     t.deepEquals(origPlayerItems, playerItems, 'player items have not changed')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Resetting: never had reset item!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -138,7 +159,7 @@ test('Reset power resolution => failure (item no longer exists)', async t => {
 })
 
 test('Reset power resolution => failure (player no longer in timeline)', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -169,9 +190,18 @@ test('Reset power resolution => failure (player no longer in timeline)', async t
       origTimeline.players.map(pId => getPlayerItems(pId, conn))
     )
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(origTimeline.players, timeline.players, 'all players still in timeline')
     t.deepEquals(origPlayerItems, playerItems, 'player items have not changed')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while resetting: was never in timeline!'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
