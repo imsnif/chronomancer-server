@@ -20,7 +20,12 @@ module.exports = function (connection) {
       if (!power || !power.timelineName) return Promise.resolve()
       const player = await getPlayer(power.playerId)
       if (player.items.map(i => i.name).includes('lock')) {
-        return lockTimeline(power.timelineName)
+        await lockTimeline(power.timelineName)
+        await createMessage({
+          text: `Has locked the timeline`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await createMessage({
           text: `Failed while ${power.name}: never had lock item!`,
@@ -34,7 +39,12 @@ module.exports = function (connection) {
       if (!power || !power.timelineName) return Promise.resolve()
       const player = await getPlayer(power.playerId)
       if (player.items.map(i => i.name).includes('unlock')) {
-        return unlockTimeline(power.timelineName)
+        await unlockTimeline(power.timelineName)
+        await createMessage({
+          text: `Has unlocked the timeline`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await createMessage({
           text: `Failed while ${power.name}: never had unlock item!`,
@@ -52,7 +62,11 @@ module.exports = function (connection) {
         const affectedPlayers = timeline.players.filter(pId => pId !== player.id)
         await removePlayersItemsFromTimeline(power.timelineName, affectedPlayers)
         await removeOtherPlayersFromTimeline(power.timelineName, player.id)
-        return Promise.resolve()
+        await createMessage({
+          text: `Has reset the timeline`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await createMessage({
           text: `Failed while ${power.name}: never had reset item!`,
@@ -89,7 +103,11 @@ module.exports = function (connection) {
       } else {
         await removeItemFromPlayer(itemName, power.target.id)
         await appendItemToPlayer(power.playerId, {name: itemName, source: false})
-        return Promise.resolve()
+        await createMessage({
+          text: `Has stolen an item`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       }
     },
     combining: async power => {
@@ -108,7 +126,11 @@ module.exports = function (connection) {
           power.playerId,
           {name: targetItem, source: power.timelineName}
         )
-        return Promise.resolve()
+        await createMessage({
+          text: `Has combined items and got the ${targetItem} item`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await createMessage({
           text: `Failed while ${power.name}: never had required items!`,
@@ -127,7 +149,11 @@ module.exports = function (connection) {
         )
       ) {
         await declareWinner(power.playerId, power.gameId)
-        return Promise.resolve()
+        await createMessage({
+          text: `Has won the game!`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await createMessage({
           text: `Failed while ${power.name}: never had required items!`,
