@@ -13,7 +13,7 @@ const {
 } = require('./test-utils')
 
 test('Steal power resolution => success', async t => {
-  t.plan(3)
+  t.plan(4)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -41,9 +41,18 @@ test('Steal power resolution => success', async t => {
     const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
     const perpetratorItems = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.ok(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item moved to stealers inventory')
     t.notOk(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 2'), 'Item not in target\'s inventory')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Has stolen an item'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

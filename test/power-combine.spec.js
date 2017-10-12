@@ -13,7 +13,7 @@ const {
 } = require('./test-utils')
 
 test('Combine power resolution => success (assist, prevent)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -38,12 +38,21 @@ test('Combine power resolution => success (assist, prevent)', async t => {
     await jobs()
     const items = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(items, [
       {name: 'assist', source: 'Timeline 2'},
       {name: 'prevent', source: 'Timeline 2'},
       {name: 'lock', source: 'Timeline 8'}
     ], 'lock item added to player')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Has combined items and got the lock item'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -51,7 +60,7 @@ test('Combine power resolution => success (assist, prevent)', async t => {
 })
 
 test('Combine power resolution => success (reset, steal)', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -76,6 +85,8 @@ test('Combine power resolution => success (reset, steal)', async t => {
     await jobs()
     const items = await getPlayerItems(playerId, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(items, [
       {name: 'assist', source: 'Timeline 2'},
       {name: 'prevent', source: 'Timeline 2'},
@@ -84,6 +95,13 @@ test('Combine power resolution => success (reset, steal)', async t => {
       {name: 'unlock', source: 'Timeline 8'}
     ], 'lock item added to player')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Has combined items and got the unlock item'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

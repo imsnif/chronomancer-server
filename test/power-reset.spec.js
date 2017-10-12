@@ -14,7 +14,7 @@ const {
 } = require('./test-utils')
 
 test('Reset power resolution => success', async t => {
-  t.plan(4)
+  t.plan(5)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -45,6 +45,8 @@ test('Reset power resolution => success', async t => {
     )
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.deepEquals(timeline.players, ['3'], 'all other players removed from timeline')
     t.notOk(power, 'power was deleted')
     t.ok(
@@ -52,6 +54,13 @@ test('Reset power resolution => success', async t => {
       'All items originating in this timeline removed'
     )
     t.ok(perpetratorItems.map(i => i.source).includes(timelineName), 'Perpetrator did not lose their items')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Has reset the timeline'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)

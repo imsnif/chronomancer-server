@@ -13,7 +13,7 @@ const {
 } = require('./test-utils')
 
 test('Unlock power resolution => success', async t => {
-  t.plan(2)
+  t.plan(3)
   try {
     const conn = await fixtures()
     const jobs = jobsFactory(conn)
@@ -37,8 +37,17 @@ test('Unlock power resolution => success', async t => {
     await jobs()
     const timeline = await getTimeline(timelineName, conn)
     const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
     t.equals(timeline.isLocked, false, 'timeline is locked')
     t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Has unlocked the timeline'
+    }, 'message created')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
