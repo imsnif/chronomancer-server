@@ -18,7 +18,7 @@ module.exports = function playerRoute (connection) {
     async (req, res, next) => {
       try {
         const userId = String(req.user.id)
-        const userPic = req.user.photos[0].value
+        const userPic = req.user.photos[0].value.replace('large', 'square') // TODO: fix this
         const userName = req.user.displayName
         await createOrUpdatePlayer(userId, userPic, userName)
         res.sendStatus(200)
