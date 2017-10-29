@@ -221,3 +221,45 @@ test('Win power resolution => failure (player no longer in timeline)', async t =
     t.fail(e.message)
   }
 })
+
+test.only('Win power resolution => failure (player no longer has room)', async t => {
+  t.plan(3)
+  try {
+    const conn = await fixtures()
+    const jobs = jobsFactory(conn)
+    const timelineName = 'Timeline 9'
+    const playerId = '10'
+    const now = new Date()
+    await createPower({
+      playerId,
+      gameId: 1,
+      timelineName,
+      name: 'Winning',
+      startTime: now.getTime(),
+      endTime: now.getTime(),
+      target: {
+        type: 'timeline',
+        name: timelineName
+      },
+      allies: [],
+      enemies: []
+    }, conn)
+    await jobs()
+    const game = await getGame(1, conn)
+    const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
+    t.equals(game.winnerId, undefined, 'Player was not declared as winner')
+    t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Winning: never had room for item!'
+    }, 'message created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
