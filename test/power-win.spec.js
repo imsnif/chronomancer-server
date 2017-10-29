@@ -222,7 +222,7 @@ test('Win power resolution => failure (player no longer in timeline)', async t =
   }
 })
 
-test.only('Win power resolution => failure (player no longer has room)', async t => {
+test('Win power resolution => failure (player no longer has room)', async t => {
   t.plan(3)
   try {
     const conn = await fixtures()
