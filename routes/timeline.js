@@ -219,6 +219,7 @@ module.exports = function timelineRoute (connection) {
     userHasItemsInArgs(connection),
     properItemsInArgs(),
     userHasNoPowerInTimeline(connection),
+    hasRoomForItem(connection),
     async (req, res, next) => {
       try {
         const { timelineName, item1, item2 } = req.params
