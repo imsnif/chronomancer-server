@@ -156,19 +156,25 @@ module.exports = function (connection) {
       const player = await getPlayer(power.playerId)
       const requiredItems = ['lock', 'unlock']
       if (
-        requiredItems.every(
+        !requiredItems.every(
           requiredItem => player.items.map(i => i.name).includes(requiredItem)
         )
       ) {
-        await declareWinner(power.playerId, power.gameId)
         await createMessage({
-          text: `Has won the game!`,
+          text: `Failed while ${power.name}: never had required items!`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
+      } else if (player.items.length >= 8) {
+        await createMessage({
+          text: `Failed while ${power.name}: never had room for item!`,
           timelineName: power.timelineName,
           playerId: power.playerId
         })
       } else {
+        await declareWinner(power.playerId, power.gameId)
         await createMessage({
-          text: `Failed while ${power.name}: never had required items!`,
+          text: `Has won the game!`,
           timelineName: power.timelineName,
           playerId: power.playerId
         })
