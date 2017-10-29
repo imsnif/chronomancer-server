@@ -89,6 +89,17 @@ module.exports = function timelineService (connection) {
       const { getTimeline } = require('../service/timeline')(connection)
       const { players } = await getTimeline(timelineName)
       return players.includes(playerId)
+    },
+    getPlayerTimelines (id) {
+      return new Promise((resolve, reject) => {
+        r.table('timelines').filter(r.row('players').contains(id)).run(connection, (err, cursor) => {
+          if (err) return reject(err)
+          cursor.toArray((err, results) => {
+            if (err) return reject(err)
+            resolve(results)
+          })
+        })
+      })
     }
   }
 }

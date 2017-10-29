@@ -21,7 +21,8 @@ const {
   targetPlayerIsNotUser,
   userHasItemsInArgs,
   properItemsInArgs,
-  hasRoomForItem
+  hasRoomForItem,
+  isNotOverIterationCap
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -131,6 +132,7 @@ module.exports = function timelineRoute (connection) {
     timelineExists(connection),
     userNotInTimeline(connection),
     timelineIsUnlocked(connection),
+    isNotOverIterationCap(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName

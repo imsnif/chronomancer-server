@@ -10,5 +10,6 @@
   "tables": [
     "players", "powers", "timelines", "games", "messages"
   ],
-  "startingActions": 10
+  "startingActions": 10,
+  "maxIterations": 4
 }

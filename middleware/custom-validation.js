@@ -17,6 +17,20 @@ module.exports = {
       }
     }
   },
+  isNotOverIterationCap (connection) {
+    const { getPlayerTimelines } = timeline(connection)
+    const { maxIterations } = require('../config')
+    return async function checkPlayerIterationsCap (req, res, next) {
+      const userId = String(req.user.id)
+      const playerTimelines = await getPlayerTimelines(userId, connection)
+      if (playerTimelines.length >= maxIterations) {
+        res.statusCode = 403
+        next('You cannot join more timelines')
+      } else {
+        next()
+      }
+    }
+  },
   hasEnoughActions (connection) {
     const { getPlayerActions } = player(connection)
     return async function checkIfUserHasEnoughActions (req, res, next) {
