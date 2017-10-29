@@ -10,7 +10,8 @@ module.exports = {
     {name: 'Timeline 5', type: 'assist', players: ['1', '2', '3', '5'], isLocked: true, gameId: 1},
     {name: 'Timeline 6', type: 'prevent', players: ['1', '2', '3', '5'], isLocked: false, gameId: 1},
     {name: 'Timeline 7', type: 'reset', players: ['1', '2', '3', '5'], isLocked: false, gameId: 1},
-    {name: 'Timeline 8', type: 'steal', players: ['6', '7', '8', '9'], isLocked: false, gameId: 1}
+    {name: 'Timeline 8', type: 'steal', players: ['6', '7', '8', '9'], isLocked: false, gameId: 1},
+    {name: 'Timeline 9', type: 'steal', players: ['10'], isLocked: false, gameId: 1}
   ],
   players: [
     {
@@ -111,6 +112,22 @@ module.exports = {
       name: 'Six-Items Achmed',
       items: [
         {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'},
+        {name: 'lock', source: 'Timeline 2'},
+        {name: 'unlock', source: 'Timeline 2'}
+      ],
+      actions: 10
+    },
+    {
+      id: '10',
+      gameId: 1,
+      name: 'Eight-Items Johan',
+      items: [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
         {name: 'prevent', source: 'Timeline 2'},
         {name: 'reset', source: 'Timeline 2'},
         {name: 'steal', source: 'Timeline 2'},

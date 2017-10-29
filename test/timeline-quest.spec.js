@@ -103,6 +103,39 @@ test('POST /timeline/quest/:timelineName => with no actions left', async t => {
   }
 })
 
+test('POST /timeline/quest/:timelineName => with no room for item', async t => {
+  t.plan(2)
+  try {
+    const userId = '10'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    await request(app)
+      .post('/timeline/quest/Timeline 9')
+      .expect(403)
+    const playerItems = await getPlayerItems(userId, conn)
+    const playerActions = await getPlayerActions(userId, conn)
+    t.deepEquals(
+      playerItems,
+      [
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'assist', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'prevent', source: 'Timeline 2'},
+        {name: 'reset', source: 'Timeline 2'},
+        {name: 'steal', source: 'Timeline 2'},
+        {name: 'lock', source: 'Timeline 2'},
+        {name: 'unlock', source: 'Timeline 2'}
+      ],
+      'item not added to player'
+    )
+    t.equals(playerActions, 10, 'actions remain at 10')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
 test('POST /timeline/quest/:timelineName => appends to existing item list', async t => {
   t.plan(1)
   try {
