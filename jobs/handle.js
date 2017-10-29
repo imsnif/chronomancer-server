@@ -100,6 +100,12 @@ module.exports = function (connection) {
           timelineName: power.timelineName,
           playerId: power.playerId
         })
+      } else if (player.items.length >= 8) {
+        await createMessage({
+          text: `Failed while ${power.name}: never had room for item!`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
       } else {
         await removeItemFromPlayer(itemName, power.target.id)
         await appendItemToPlayer(power.playerId, {name: itemName, source: false})
