@@ -20,7 +20,8 @@ const {
   targetPlayerHasItem,
   targetPlayerIsNotUser,
   userHasItemsInArgs,
-  properItemsInArgs
+  properItemsInArgs,
+  hasRoomForItem
 } = require('../middleware/custom-validation')
 
 module.exports = function timelineRoute (connection) {
@@ -47,6 +48,7 @@ module.exports = function timelineRoute (connection) {
     '/quest/:timelineName',
     timelineExists(connection),
     userInTimeline(connection),
+    hasRoomForItem(connection),
     async (req, res, next) => {
       try {
         const timelineName = req.params.timelineName

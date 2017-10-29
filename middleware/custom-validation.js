@@ -188,6 +188,19 @@ module.exports = {
       }
     }
   },
+  hasRoomForItem (connection) {
+    const { getPlayer } = player(connection)
+    return async function checkIfUserHasRoom (req, res, next) {
+      const userId = String(req.user.id)
+      const player = await getPlayer(userId, connection)
+      if (player.items.length >= 8) {
+        res.statusCode = 403
+        next(`No more room for items!`)
+      } else {
+        next()
+      }
+    }
+  },
   userHasItemsInArgs (connection) {
     const { getPlayer } = player(connection)
     return async function checkIfUserHasItems (req, res, next) {
