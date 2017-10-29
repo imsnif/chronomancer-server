@@ -181,6 +181,29 @@ test('POST /timeline/combine/:item1/:item2/:timelineName => with no actions left
   }
 })
 
+test('POST /timeline/combine/:item1/:item2/:timelineName => with no room left', async t => {
+  t.plan(2)
+  try {
+    const userId = '10'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 9'
+    const item1 = 'lock'
+    const item2 = 'unlock'
+    await request(app)
+      .post(`/timeline/combine/${item1}/${item2}/${timelineName}`)
+      .expect(403)
+    const power = await getPower(userId, timelineName, conn)
+    const actions = await getPlayerActions(userId, conn)
+    t.equals(actions, 10, 'actions remain at 10')
+    t.notOk(power, 'power not created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
 test('POST /timeline/combin/:item1/:item2/:timelineName => with wrong combinations', async t => {
   t.plan(2)
   try {
