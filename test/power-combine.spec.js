@@ -279,3 +279,55 @@ test('Combine power resolution => failure (player no longer in timeline)', async
     t.fail(e.message)
   }
 })
+
+test('Combine power resolution => failure (player no longer has room)', async t => {
+  t.plan(3)
+  try {
+    const conn = await fixtures()
+    const jobs = jobsFactory(conn)
+    const timelineName = 'Timeline 9'
+    const playerId = '10'
+    const now = new Date()
+    await createPower({
+      playerId,
+      gameId: 1,
+      timelineName,
+      name: 'Combining',
+      startTime: now.getTime(),
+      endTime: now.getTime(),
+      target: {
+        type: 'timeline',
+        name: timelineName,
+        itemName: 'lock'
+      },
+      allies: [],
+      enemies: []
+    }, conn)
+    await jobs()
+    const items = await getPlayerItems(playerId, conn)
+    const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
+    t.deepEquals(items, [
+      {name: 'assist', source: 'Timeline 2'},
+      {name: 'assist', source: 'Timeline 2'},
+      {name: 'prevent', source: 'Timeline 2'},
+      {name: 'prevent', source: 'Timeline 2'},
+      {name: 'reset', source: 'Timeline 2'},
+      {name: 'steal', source: 'Timeline 2'},
+      {name: 'lock', source: 'Timeline 2'},
+      {name: 'unlock', source: 'Timeline 2'}
+    ], 'player items unchanged')
+    t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Combining: never had room for item!'
+    }, 'message created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
