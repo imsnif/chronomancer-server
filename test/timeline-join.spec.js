@@ -15,7 +15,7 @@ const {
 test('POST /timeline/join/:timelineName => joins timeline with no players', async t => {
   t.plan(1)
   try {
-    const userId = '3'
+    const userId = '10'
     stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
@@ -34,7 +34,7 @@ test('POST /timeline/join/:timelineName => joins timeline with no players', asyn
 test('POST /timeline/join/:timelineName => creates relevant message', async t => {
   t.plan(1)
   try {
-    const userId = '3'
+    const userId = '10'
     stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
@@ -46,7 +46,7 @@ test('POST /timeline/join/:timelineName => creates relevant message', async t =>
     const relevantMessage = messages.find(m => m.playerId === userId)
     t.deepEquals(_.omit(relevantMessage, ['id', 'startTime']), {
       gameId: 1,
-      playerId: '3',
+      playerId: '10',
       readBy: [],
       text: 'has travelled to this timeline',
       timelineName
@@ -60,7 +60,7 @@ test('POST /timeline/join/:timelineName => creates relevant message', async t =>
 test('POST /timeline/join/:timelineName => joins timeline with existing players', async t => {
   t.plan(1)
   try {
-    const userId = '1'
+    const userId = '10'
     stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
@@ -69,7 +69,7 @@ test('POST /timeline/join/:timelineName => joins timeline with existing players'
       .post(`/timeline/join/${timelineName}`)
       .expect(200)
     const timeline = await getTimeline(timelineName, conn)
-    t.deepEquals(timeline.players.sort(), ['1', '2', '3'].sort(), 'player appended to timeline')
+    t.deepEquals(timeline.players.sort(), ['10', '2', '3'].sort(), 'player appended to timeline')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
@@ -79,7 +79,7 @@ test('POST /timeline/join/:timelineName => joins timeline with existing players'
 test('POST /timeline/join/:timelineName => costs 1 action', async t => {
   t.plan(1)
   try {
-    const userId = '1'
+    const userId = '10'
     stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
@@ -109,6 +109,27 @@ test('POST /timeline/join/:timelineName => with no actions left', async t => {
     const timeline = await getTimeline(timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 0, 'actions remain at 0')
+    t.notOk(timeline.players.includes(userId), 'user not added to timeline')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
+test('POST /timeline/join/:timelineName => when over iterations cap', async t => {
+  t.plan(2)
+  try {
+    const userId = '3'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 4'
+    await request(app)
+      .post(`/timeline/join/${timelineName}`)
+      .expect(403)
+    const timeline = await getTimeline(timelineName, conn)
+    const actions = await getPlayerActions(userId, conn)
+    t.equals(actions, 10, 'actions remain at 10')
     t.notOk(timeline.players.includes(userId), 'user not added to timeline')
   } catch (e) {
     console.error(e.stack)
@@ -186,18 +207,18 @@ test('POST /timeline/join/:timelineName => bad parameters - non-existent timelin
 test('POST /timeline/join/:timelineName => user already in timeline', async t => {
   t.plan(2)
   try {
-    const userId = '1'
+    const userId = '10'
     stubPassport('foo', 'bar', userId)
     const conn = await fixtures()
     const app = require('../app')(conn)
-    const timelineName = 'Timeline 1'
+    const timelineName = 'Timeline 9'
     await request(app)
       .post(`/timeline/join/${timelineName}`)
       .expect(403)
     const timeline = await getTimeline(timelineName, conn)
     const actions = await getPlayerActions(userId, conn)
     t.equals(actions, 10, 'actions not decremented')
-    t.deepEquals(timeline.players.sort(), ['1', '2', '3', '4'].sort(), 'timeline players unchanged')
+    t.deepEquals(timeline.players.sort(), ['10', '9'].sort(), 'timeline players unchanged')
   } catch (e) {
     console.error(e.stack)
     t.fail(e.message)
