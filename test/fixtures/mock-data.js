@@ -11,7 +11,7 @@ module.exports = {
     {name: 'Timeline 6', type: 'prevent', players: ['1', '2', '3', '5'], isLocked: false, gameId: 1},
     {name: 'Timeline 7', type: 'reset', players: ['1', '2', '3', '5'], isLocked: false, gameId: 1},
     {name: 'Timeline 8', type: 'steal', players: ['6', '7', '8', '9'], isLocked: false, gameId: 1},
-    {name: 'Timeline 9', type: 'steal', players: ['10'], isLocked: false, gameId: 1}
+    {name: 'Timeline 9', type: 'steal', players: ['9', '10'], isLocked: false, gameId: 1}
   ],
   players: [
     {

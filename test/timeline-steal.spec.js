@@ -103,6 +103,29 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no ac
   }
 })
 
+test.only('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no actions left', async t => {
+  t.plan(2)
+  try {
+    const userId = '10'
+    stubPassport('foo', 'bar', userId)
+    const conn = await fixtures()
+    const app = require('../app')(conn)
+    const timelineName = 'Timeline 9'
+    const itemName = 'lock'
+    const targetPlayerId = '9'
+    await request(app)
+      .post(`/timeline/steal/${itemName}/${targetPlayerId}/${timelineName}`)
+      .expect(403)
+    const power = await getPower(userId, timelineName, conn)
+    const actions = await getPlayerActions(userId, conn)
+    t.equals(actions, 10, 'actions remain at 10')
+    t.notOk(power, 'power not created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
 test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no steal item', async t => {
   t.plan(2)
   try {
