@@ -124,22 +124,28 @@ module.exports = function (connection) {
         ? ['assist', 'prevent']
         : ['reset', 'steal']
       if (
-        requiredItems.every(
+        !requiredItems.every(
           requiredItem => player.items.map(i => i.name).includes(requiredItem)
         )
       ) {
+        await createMessage({
+          text: `Failed while ${power.name}: never had required items!`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
+      } else if (player.items.length >= 8) {
+        await createMessage({
+          text: `Failed while ${power.name}: never had room for item!`,
+          timelineName: power.timelineName,
+          playerId: power.playerId
+        })
+      } else {
         await appendItemToPlayer(
           power.playerId,
           {name: targetItem, source: power.timelineName}
         )
         await createMessage({
           text: `Has combined items and got the ${targetItem} item`,
-          timelineName: power.timelineName,
-          playerId: power.playerId
-        })
-      } else {
-        await createMessage({
-          text: `Failed while ${power.name}: never had required items!`,
           timelineName: power.timelineName,
           playerId: power.playerId
         })
