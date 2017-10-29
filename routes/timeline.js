@@ -184,6 +184,7 @@ module.exports = function timelineRoute (connection) {
     userHasItem('steal', connection),
     targetPlayerInTimeline(connection),
     targetPlayerHasItem(connection),
+    hasRoomForItem(connection),
     async (req, res, next) => {
       try {
         const { timelineName, itemName } = req.params
