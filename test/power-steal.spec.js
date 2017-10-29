@@ -245,6 +245,53 @@ test('Steal power resolution => failure (player no longer in timeline)', async t
   }
 })
 
+test('Steal power resolution => failure (player no longer has room for item)', async t => {
+  t.plan(4)
+  try {
+    const conn = await fixtures()
+    const jobs = jobsFactory(conn)
+    const timelineName = 'Timeline 9'
+    const playerId = '10'
+    const targetPlayerId = '9'
+    const itemName = 'lock'
+    const now = new Date()
+    await createPower({
+      playerId,
+      itemName,
+      gameId: 1,
+      timelineName,
+      name: 'Stealing',
+      startTime: now.getTime(),
+      endTime: now.getTime(),
+      target: {
+        type: 'player',
+        id: targetPlayerId
+      },
+      allies: [],
+      enemies: []
+    }, conn)
+    await jobs()
+    const targetPlayerItems = await getPlayerItems(targetPlayerId, conn)
+    const perpetratorItems = await getPlayerItems(playerId, conn)
+    const power = await getPower(playerId, timelineName, conn)
+    const messages = await getMessages(conn)
+    const createdMessage = messages.find(m => m.timelineName === timelineName)
+    t.notOk(perpetratorItems.find(i => i.name === 'lock' && i.source === false), 'Item not moved to stealers inventory')
+    t.ok(targetPlayerItems.find(i => i.name === 'lock' && i.source === 'Timeline 2'), 'Item still in target\'s inventory')
+    t.notOk(power, 'power was deleted')
+    t.deepEquals(_.omit(createdMessage, ['id', 'startTime']), {
+      gameId: 1,
+      playerId,
+      timelineName,
+      readBy: [],
+      text: 'Failed while Stealing: never had room for item!'
+    }, 'message created')
+  } catch (e) {
+    console.error(e.stack)
+    t.fail(e.message)
+  }
+})
+
 test('Steal power resolution => failure (target player no longer in timeline)', async t => {
   t.plan(4)
   try {
