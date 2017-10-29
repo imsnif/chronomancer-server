@@ -103,7 +103,7 @@ test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no ac
   }
 })
 
-test.only('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no actions left', async t => {
+test('POST /timeline/steal/:itemName/:targetPlayerId/:timelineName => with no actions left', async t => {
   t.plan(2)
   try {
     const userId = '10'
